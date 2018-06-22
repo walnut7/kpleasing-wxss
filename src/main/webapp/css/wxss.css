@@ -1,0 +1,99 @@
+body, html {
+  height: 100%;
+  -webkit-tap-highlight-color: transparent;
+}
+
+footer {
+  text-align: center;
+  font-size: 14px;
+  padding: 20px;
+}
+
+footer a {
+  color: #999;
+  text-decoration: none;
+}
+
+.wxss-register_title{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: white;
+}
+
+.wxss-register_turnimg{
+    display: flex;
+    align-items: center;
+}
+
+.wxss-register_title img {
+    padding-left: 20px;
+    width: 10px;
+    height: 18px;
+}
+
+.wxss-register_btn_div {
+    margin-top: 30px;
+    width: 70%;
+    margin: auto;
+    background-color: #eb682e;
+    height: 44px;
+    text-align: center;
+    line-height: 44px;
+    color: white;
+    border-radius: 4px;
+}
+
+
+.wxss-register_btn_disabled_div {
+	margin-top: 30px;
+    width: 70%;
+    margin: auto;
+    background-color: #c0c0c0;
+    height: 44px;
+    text-align: center;
+    line-height: 44px;
+    color: white;
+    border-radius: 4px;
+}
+
+
+.wxss-register_btn {
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+/** 上传sytle*/
+.upload{
+    width: 100%;
+    height: 180px;
+    display: flex;
+    padding-top: 15px;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.upload_content{
+    width: 80%;
+    height: 175px;
+    background-color: white;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #cccccc;
+}
+
+#preview,#previewA,#previewB {
+    display:flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.upload_content img{
+    width: 100%;
+    height: 175px;
+    border-radius: 10px;
+}
