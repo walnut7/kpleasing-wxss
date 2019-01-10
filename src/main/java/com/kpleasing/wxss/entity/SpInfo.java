@@ -30,6 +30,9 @@ public class SpInfo implements java.io.Serializable {
 	private byte enabledFlag;
 	private Date createAt;
 	private Date updateAt;
+	private String spLogo;
+	private String cellPhone;
+	
 	
 	
 
@@ -48,8 +51,9 @@ public class SpInfo implements java.io.Serializable {
 		this.createAt = createAt;
 	}
 
+
 	public SpInfo(int bpId, String bpCode, String bpName, String organizationCode, String province, String city,
-			String imageUrl,byte enabledFlag, Date createAt, Date updateAt) {
+			String imageUrl,byte enabledFlag, Date createAt, Date updateAt, String spLogo,String cellPhone) {
 		this.bpId = bpId;
 		this.bpCode = bpCode;
 		this.bpName = bpName;
@@ -60,6 +64,8 @@ public class SpInfo implements java.io.Serializable {
 		this.enabledFlag = enabledFlag;
 		this.createAt = createAt;
 		this.updateAt = updateAt;
+		this.spLogo = spLogo;
+		this.cellPhone = cellPhone;
 	}
 
 	@Id
@@ -164,6 +170,24 @@ public class SpInfo implements java.io.Serializable {
 
 	public void setEnabledFlag(byte enabledFlag) {
 		this.enabledFlag = enabledFlag;
+	}
+	
+	@Column(name = "sp_logo")
+	public String getSpLogo() {
+		return this.spLogo;
+	}
+
+	public void setSpLogo(String spLogo) {
+		this.spLogo = spLogo;
+	}
+	
+	@Column(name = "cell_phone")
+	public String getCellPhone() {
+		return this.cellPhone;
+	}
+
+	public void setCellPhone(String cellPhone) {
+		this.cellPhone = cellPhone;
 	}
 
 }

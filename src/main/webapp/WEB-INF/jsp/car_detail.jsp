@@ -28,7 +28,7 @@
 <body style="padding-bottom:constant(safe-area-inset-bottom)">
 	<div id="scrollMain" class="pb15 ofy_auto">
 		<img id="seriesLogo_id"
-			src="http://test.e-autofinance.net:8080/kp_test/${car.seriesLogo}"
+			src="http://leasing.e-autofinance.net:8080/kp_prod/${car.seriesLogo}"
 			alt="" class="wp100">
 		<!-- 增配选项 -->
 		<div class="flx flx_m bg_white plist mb8">
@@ -40,57 +40,12 @@
 			</div>
 		</div>
 		<!-- 最新报价 -->
-		<div class="flx flx_m bg_white plist line_btm">
-			<div class="flx_1">
-				<p class="fs16 mb8">
-					购置税：<span id="purchaseTax_id">${car.purchaseTax}</span>元
-				</p>
-				<p class="fs16 flx flx_m">
-					1年保费：<span id="insuranceFeeFinancing_id">${car.insuranceFeeFinancing}</span>元
-
-				</p>
-			</div>
-
-		</div>
-		<!-- 几年期税率 -->
 		<div class="bg_white line_btm">
-			<p class="h30 flx flx_m line_btm_15 pl15 pr15">1年期</p>
+			<p class="h30 flx flx_m line_btm_15 pl15 pr15" style="font-weight:bold;">1年期</p>
 			<c:forEach items="${schemes}" var="scheme">
-				<c:if test="${scheme.leaseTimes==12}">
-					<div class="flx flx_m plist tax cur" _planId="${scheme.planId}">
-						<div class="circle flx flx_m flx_c">
-							<p></p>
-						</div>
-						<div class="flx_1 pl15">
-							<c:if test="${scheme.depositAmount >0 }">
-								<p class="mb5">
-									保证金：￥<span><c:out value="${scheme.depositAmount}" /></span>元
-								</p>
-							</c:if>
-
-							<c:if test="${scheme.downpaymentAmount >0 }">
-								<p class="mb5">
-									首付款：￥<span><c:out value="${scheme.downpaymentAmount}" /></span>元
-								</p>
-							</c:if>
-							<p>
-								月租金：￥<span><c:out value="${scheme.rental}" /></span>元
-							</p>
-						</div>
-						<p class="fs16 clr_orange">
-							年利率：<span><fmt:formatNumber value="${scheme.intRate*100}" type="number" maxFractionDigits="2"/>
-							%</span>
-						</p>
-					</div>
-				</c:if>
-			</c:forEach>
-
-		</div>
-		<div class="bg_white line_btm">
-			<p class="h30 flx flx_m line_btm_15 pl15 pr15">2年期</p>
-			<c:forEach items="${schemes}" var="scheme">
-				<c:if test="${scheme.leaseTimes==24}">
-					<div class="flx flx_m plist tax cur" id="plan_${scheme.planId}">
+				<c:if test="${scheme.leaseTimes==12 	&& scheme.planType!='XMC' && (scheme.buyoutAmount == null || scheme.buyoutAmount ==0 )}">
+					<p class="h30 flx flx_m	 pl15 pr15">${scheme.planSynopsis}</p>
+					<div class="line_btm_15 flx flx_m  plist tax cur" id="plan_${scheme.planId}" >
 						<div class="circle flx flx_m flx_c" _planId="${scheme.planId}">
 							<p></p>
 						</div>
@@ -110,19 +65,17 @@
 								月租金：￥<span><c:out value="${scheme.rental}" /></span>元
 							</p>
 						</div>
-						<p class="fs16 clr_orange">
-							年利率：<span><fmt:formatNumber value="${scheme.intRate*100}" type="number" maxFractionDigits="2"/>
-							%</span>
-						</p>
 					</div>
 				</c:if>
 			</c:forEach>
+
 		</div>
 		<div class="bg_white line_btm">
-			<p class="h30 flx flx_m line_btm_15 pl15 pr15">3年期</p>
+			<p class="h30 flx flx_m line_btm_15 pl15 pr15" style="font-weight:bold;">2年期</p>
 			<c:forEach items="${schemes}" var="scheme">
-				<c:if test="${scheme.leaseTimes==36	 }">
-					<div class="flx flx_m plist tax cur" id="plan_${scheme.planId}">
+				<c:if test="${scheme.leaseTimes==24 	&& scheme.planType!='XMC' && (scheme.buyoutAmount == null || scheme.buyoutAmount ==0 )}">
+					<p class="h30 flx flx_m	 pl15 pr15">${scheme.planSynopsis}</p>
+					<div class="line_btm_15 flx flx_m plist tax cur" id="plan_${scheme.planId}">
 						<div class="circle flx flx_m flx_c" _planId="${scheme.planId}">
 							<p></p>
 						</div>
@@ -142,20 +95,16 @@
 								月租金：￥<span><c:out value="${scheme.rental}" /></span>元
 							</p>
 						</div>
-						<p class="fs16 clr_orange">
-							年利率：<span><fmt:formatNumber value="${scheme.intRate*100}" type="number" maxFractionDigits="2"/>
-							%</span>
-						</p>
 					</div>
 				</c:if>
 			</c:forEach>
 		</div>
-
 		<div class="bg_white line_btm">
-			<p class="h30 flx flx_m line_btm_15 pl15 pr15">4年期</p>
+			<p class="h30 flx flx_m line_btm_15 pl15 pr15" style="font-weight:bold;">3年期</p>
 			<c:forEach items="${schemes}" var="scheme">
-				<c:if test="${scheme.leaseTimes==48 && scheme.planType!='XMC'	 }">
-					<div class="flx flx_m plist tax cur" id="plan_${scheme.planId}">
+				<c:if test="${scheme.leaseTimes==36	&& scheme.planType!='XMC' && (scheme.buyoutAmount == null || scheme.buyoutAmount ==0 ) }">
+					<p class="h30 flx flx_m	 pl15 pr15">${scheme.planSynopsis}</p>
+					<div class="line_btm_15 flx flx_m plist tax cur" id="plan_${scheme.planId}">
 						<div class="circle flx flx_m flx_c" _planId="${scheme.planId}">
 							<p></p>
 						</div>
@@ -175,11 +124,36 @@
 								月租金：￥<span><c:out value="${scheme.rental}" /></span>元
 							</p>
 						</div>
-						<p class="fs16 clr_orange">
-							年利率：<span>
-							<fmt:formatNumber value="${scheme.intRate*100}" type="number" maxFractionDigits="2"/>
-							%</span>
-						</p>
+					</div>
+				</c:if>
+			</c:forEach>
+		</div>
+
+		<div class="bg_white line_btm">
+			<p class="h30 flx flx_m line_btm_15 pl15 pr15" style="font-weight:bold;">4年期</p>
+			<c:forEach items="${schemes}" var="scheme">
+				<c:if test="${scheme.leaseTimes==48 	&& scheme.planType!='XMC' && (scheme.buyoutAmount == null || scheme.buyoutAmount ==0 )	 }">
+					<p class="h30 flx flx_m	 pl15 pr15">${scheme.planSynopsis}</p>
+					<div class="line_btm_15 flx flx_m plist tax cur" id="plan_${scheme.planId}">
+						<div class="circle flx flx_m flx_c" _planId="${scheme.planId}">
+							<p></p>
+						</div>
+						<div class="flx_1 pl15">
+							<c:if test="${scheme.depositAmount >0 }">
+								<p class="mb5">
+									保证金：￥<span><c:out value="${scheme.depositAmount}" /></span>元
+								</p>
+							</c:if>
+
+							<c:if test="${scheme.downpaymentAmount >0 }">
+								<p class="mb5">
+									首付款：￥<span><c:out value="${scheme.downpaymentAmount}" /></span>元
+								</p>
+							</c:if>
+							<p>
+								月租金：￥<span><c:out value="${scheme.rental}" /></span>元
+							</p>
+						</div>
 					</div>
 				</c:if>
 			</c:forEach>
@@ -187,10 +161,11 @@
 
 		<!-- 1加3方案 -->
 		<div class="bg_white line_btm">
-			<p class="h30 flx flx_m line_btm_15 pl15 pr15">1+3方案</p>
+			<p class="h30 flx flx_m line_btm_15 pl15 pr15" style="font-weight:bold;">1+3方案</p>
 			<c:forEach items="${schemes}" var="scheme">
-				<c:if test="${scheme.planType=='XMC'	 }">
-					<div class="flx flx_m plist tax cur" id="plan_${scheme.planId}">
+				<c:if test="${(scheme.planType=='XMC' ||scheme.planType=='BO') && scheme.buyoutAmount>0}">
+					<p class="h30 flx flx_m	 pl15 pr15">${scheme.planSynopsis}</p>
+					<div class="line_btm_15 flx flx_m plist tax cur" id="plan_${scheme.planId}">
 						<div class="circle flx flx_m flx_c" _planId="${scheme.planId}">
 							<p></p>
 						</div>
@@ -295,7 +270,7 @@
 								for (var i = 0; i < divs.length; i++) {
 									var dis = $(divs[i]);
 									var plans_div = dis
-											.children("div[class='flx flx_m plist tax cur']");
+											.children("div[class='line_btm_15 flx flx_m plist tax cur']");
 									if (plans_div.length == 0) {
 										dis.hide();
 									}

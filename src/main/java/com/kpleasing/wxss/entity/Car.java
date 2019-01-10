@@ -123,7 +123,7 @@ public class Car implements java.io.Serializable {
 		this.seriesLogo = seriesLogo;
 	}
 
-	@Column(name = "model", length = 60)
+	@Column(name = "model", length = 255)
 	public String getModel() {
 		return this.model;
 	}

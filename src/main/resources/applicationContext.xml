@@ -2,6 +2,7 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
 	xmlns:cache="http://www.springframework.org/schema/cache"
+	xmlns:mongo="http://www.springframework.org/schema/data/mongo"
 	xmlns:context="http://www.springframework.org/schema/context"
 	xmlns:jdbc="http://www.springframework.org/schema/jdbc" xmlns:jee="http://www.springframework.org/schema/jee"
 	xmlns:jms="http://www.springframework.org/schema/jms" xmlns:lang="http://www.springframework.org/schema/lang"
@@ -20,10 +21,12 @@
   	http://www.springframework.org/schema/oxm http://www.springframework.org/schema/oxm/spring-oxm-4.0.xsd  
  	http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-4.0.xsd  
     http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.0.xsd  
+    http://www.springframework.org/schema/data/mongo
+    http://www.springframework.org/schema/data/mongo/spring-mongo.xsd
     http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.0.xsd">
 
 	<description>微信门店扫码配置 </description>
-	<context:property-placeholder location="classpath:dataSource.properties"/>
+	<context:property-placeholder location="classpath:config/*.properties"/>
 	<bean id="dataSource" name="dataSource"	class="com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close">
 		<property name="driverClass" value="${jdbc.driverClassName}" />
 		<property name="jdbcUrl" value="${jdbc.url}" />
@@ -63,6 +66,7 @@
 				<value>com.kpleasing.wxss.entity.DrivingLicenseInfo</value>
 				<value>com.kpleasing.wxss.entity.BankInfo</value>
 				<value>com.kpleasing.wxss.entity.PersonInfo</value>
+				<value>com.kpleasing.wxss.entity.ContactInfo</value>
 				<value>com.kpleasing.wxss.entity.WorkInfo</value>
 				<value>com.kpleasing.wxss.entity.FaceVideo</value>
 				<value>com.kpleasing.wxss.entity.Config</value>
@@ -76,6 +80,7 @@
 				<value>com.kpleasing.wxss.entity.DictConfig</value>
 				<value>com.kpleasing.wxss.entity.Province</value>
 				<value>com.kpleasing.wxss.entity.City</value>
+				<value>com.kpleasing.wxss.entity.RSpCar</value>
 			</list>
 		</property>
 	</bean>
@@ -108,5 +113,22 @@
 
 	<!-- 扫描业务层service实现类 -->
 	<context:component-scan base-package="com.kpleasing.wxss.**" />
+	<context:component-scan base-package="org.springframework.data.mongodb"/>
 	<bean id="springContextHolder" class="com.kpleasing.wxss.web.spring.SpringContextHolder"/>
+	
+    <mongo:mongo-client id="mongo" host="${mongo.host}" port="${mongo.port}" credentials="${mongo.username}:${mongo.password}@${mongo.dbname}">    
+    <mongo:client-options write-concern="SAFE"
+		    connections-per-host="${mongo.connectionsPerHost}"
+		    min-connections-per-host="${mongo.minConnectionsPerHost}"
+		    threads-allowed-to-block-for-connection-multiplier="${mongo.threadsAllowedToBlockForConnectionMultiplier}"
+		    connect-timeout="${mongo.connectTimeout}"
+		    max-wait-time="${mongo.maxWaitTime}"
+		    socket-keep-alive="${mongo.socketKeepAlive}"
+		    socket-timeout="${mongo.socketTimeout}"
+	/>
+    </mongo:mongo-client>   
+    <mongo:db-factory  id="mongoDbFactory" dbname="${mongo.dbname}" mongo-ref="mongo" /> 
+    <bean id="mongoTemplate" class="org.springframework.data.mongodb.core.MongoTemplate">    
+       <constructor-arg name="mongoDbFactory" ref="mongoDbFactory" />    
+    </bean>
 </beans>

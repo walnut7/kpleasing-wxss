@@ -81,7 +81,7 @@ public abstract class BaseDaoImpl<T, PK extends Serializable> implements BaseDao
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	public List<T> find(final String hql, final Object...values){  
+	public List<T> find(final String hql, final Object...values) {
 		Query<T> query = this.getSession().createQuery(hql);
         for(int i = 0;i<values.length;i++){
             query.setParameter(i, values[i]);

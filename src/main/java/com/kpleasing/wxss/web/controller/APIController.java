@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.apache.commons.beanutils.BeanUtils;
 import org.jboss.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,10 +15,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.ModelAndView;
 
 import com.kpleasing.wxss.config.Configurate;
 import com.kpleasing.wxss.entity.SecurityKey;
 import com.kpleasing.wxss.exception.WXSSException;
+import com.kpleasing.wxss.mongo.collections.SpdbInterfaceLogCollection;
 import com.kpleasing.wxss.protocol.request.SyncCarInfoRequest;
 import com.kpleasing.wxss.protocol.request.SyncCarParam;
 import com.kpleasing.wxss.protocol.request.SyncFinSchemeRequest;
@@ -25,11 +30,16 @@ import com.kpleasing.wxss.protocol.response.SyncCarInfoResponse;
 import com.kpleasing.wxss.protocol.response.SyncFinSchemeResponse;
 import com.kpleasing.wxss.protocol.response.SyncSPInfoResponse;
 import com.kpleasing.wxss.util.EncryptUtil;
+import com.kpleasing.wxss.util.JsonUtil;
 import com.kpleasing.wxss.util.XMLHelper;
+import com.kpleasing.wxss.util.JsonUtil.JsonDateValueProcessor;
 import com.kpleasing.wxss.web.service.ConfigService;
+import com.kpleasing.wxss.web.service.SpdbLogsService;
 import com.kpleasing.wxss.web.service.SyncCarInfoService;
 import com.kpleasing.wxss.web.service.SyncFinSchemeService;
 import com.kpleasing.wxss.web.service.SyncSPInfoService;
+
+import net.sf.json.JsonConfig;
 
 
 
@@ -50,6 +60,9 @@ public class APIController {
 	
 	@Autowired
 	private SyncFinSchemeService syncFinSchemeService;
+	
+	@Autowired
+	SpdbLogsService  spdbLogsService;
 	
 	/**
 	 * 同步SP信息
@@ -206,5 +219,33 @@ public class APIController {
 			return msgResponse;
 		}
 	}	
+	
+	
+	/**
+	 * 打开浦发日志查询页面
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping(value = "spdb_log", method = RequestMethod.GET)
+	public ModelAndView redirectCertInfoA(HttpServletRequest request, HttpServletResponse response) {
+		return new ModelAndView("manage/spdb_log");
+	}
+	
+	
+	/**
+	 * 查询浦发操作日志信息
+	 * @param request
+	 * @return
+	 */
+	@RequestMapping(value = "search_spdb_list", method = RequestMethod.POST)
+	public @ResponseBody String searchSpdbLogsInfo(HttpServletRequest request, SpdbInterfaceLogCollection parameters) {
+		logger.info("start to search spdb operation logs info .....");
+		List<SpdbInterfaceLogCollection> spdbLogs = spdbLogsService.findSpdbOperateLog(parameters);
+		
+		JsonConfig jsonConfig = new JsonConfig();
+		jsonConfig.registerJsonValueProcessor(java.util.Date.class, new JsonDateValueProcessor("yyyy-MM-dd HH:mm:ss"));
+		return JsonUtil.JSON_List2String(spdbLogs, jsonConfig);
+	}
 	
 }

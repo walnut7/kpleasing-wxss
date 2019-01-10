@@ -23,7 +23,7 @@
     <link rel="stylesheet" href="${ctx}/css/wxss.css">
     <script type="text/javascript" src="${ctx}/js/jquery-3.2.1.min.js"></script>
     <script type="text/javascript" src="${ctx}/js/fastclick.js"></script>
-     <script type="text/javascript" src="${ctx}/js/jquery-weui.min.js"></script>
+    <script type="text/javascript" src="${ctx}/js/jquery-weui.min.js"></script>
 	<script type="text/javascript" src="https://res.wx.qq.com/open/libs/weuijs/1.1.3/weui.min.js"></script>
 	<script type="text/javascript" src="${ctx}/js/wxss.js"></script>
 	<script type="text/javascript" src="${ctx}/js/lrz.all.bundle.js"></script>
@@ -98,21 +98,33 @@
       			</div>
       			<div class="weui-cell">
 			        <div class="weui-cell__hd">
-			            <label class="weui-label">手机号</label>
+			            <label class="weui-label">开卡手机号</label>
 			        </div>
 			        <div class="weui-cell__bd" style="padding-right:20px;">
 			            <input class="weui-input" name="bankPhone" type="tel" style="text-align:right;padding-right:20px;" placeholder="银行预留手机号" value="${bank.bankPhone}">
 			        </div>
 			    </div>
-      			<div class="weui-cell weui-cell_vcode">
-        			<div class="weui-cell__hd"><label class="weui-label">短信验证码</label></div>
-        			<div class="weui-cell__bd" style="padding-right:20px;">
-	                    <input class="weui-input" type="text" name="verifyCode" style="text-align:right;" type="tel" placeholder="验证码" value="" >
-	                </div>
-	                 <div class="weui-cell__ft">
-			            <button class="weui-vcode-btn" onclick="javascript:sendVerifyCode();">获取验证码</button>
-			        </div>
-      			</div>
+			    <c:choose>
+			        <c:when test="${spdb_cert_flag eq 1 and (!empty bank.spdbStcardNo or bank.spdbFlag eq 1)}">
+			            <input type="hidden" name="verifyCode" style="text-align:right;" placeholder="验证码" value="000000" >
+			            <span style="display:none"><input id="weuiAgree" type="checkbox" class="weui-agree__checkbox" checked="checked" /></span>
+			        </c:when>
+			        <c:otherwise>
+			            <div class="weui-cell weui-cell_vcode">
+		        			<div class="weui-cell__hd"><label class="weui-label">短信验证码</label></div>
+		        			<div class="weui-cell__bd" style="padding-right:20px;">
+			                    <input class="weui-input" type="text" name="verifyCode" style="text-align:right;" type="tel" placeholder="验证码" value="" >
+			                </div>
+			                 <div class="weui-cell__ft">
+					            <button class="weui-vcode-btn" onclick="javascript:sendVerifyCode();">获取验证码</button>
+					        </div>
+		      			</div>
+		      			<div class="weui-cells__tips">
+		      			   <input id="weuiAgree" type="checkbox" class="weui-agree__checkbox"/> 
+					       <span class="weui-agree__text">本人同意在浦发银行开设专户电子账户！ </span>
+					    </div>
+			        </c:otherwise>
+				</c:choose>
       			<div style="display:none;">
       				<input name="repayAccBankCode" type="hidden" value="${bank.repayAccBankCode}" />
       				<input name="bankcardFrontImagePath" type="hidden" value="${bank.bankcardFrontImagePath}" />
@@ -127,8 +139,17 @@
  </div>
 </body>
 <script>
+	var InterValObj; // timer变量，控制时间
+	var count = 60-(new Date().getTime()-(new Date(Date.parse("${bank.smsSendtime}".replace(/-/g,"/"))).getTime()))/1000;
+	var curCount = (!isNaN(count) && count>0)?parseInt(count):60;    // 当前剩余秒数
+	
 	$(function() {
 		$(document).ajaxStart(function() {	$.showLoading();}).ajaxStop(function() { $.hideLoading(); });
+	    if(!isNaN(count) && count>0) {
+	    	$(".weui-vcode-btn").attr("disabled", "disabled");
+	        $(".weui-vcode-btn").text(curCount + "秒内输入");
+	        InterValObj = window.setInterval(SetRemainTime, 1000); //启动计时器，1秒执行一次
+		}
 	});
 
 	// 下一步
@@ -142,7 +163,7 @@
         } else if ($("input[name='bankPhone']").val() === "") {
             $.alert("银行卡预留手机号不能为空");
             
-        } else if (!/^1[3|4|5|7|8][0-9]\d{8}$/.test($("input[name='bankPhone']").val().trim())) {
+        } else if (!/^1[3|4|5|6|7|8|9][0-9]\d{8}$/.test($("input[name='bankPhone']").val().trim())) {
         	$.alert("手机号格式不正确！");
         	
         } else if ($("input[name='bankcardFrontImagePath']").val() === "") {
@@ -154,6 +175,12 @@
         }  else if ($("input[name='repayAccBankCode']").val() === "") {
             $.alert("请重新选择还款银行");
 
+        } else if ($("input[name='verifyCode']").val() === "") {
+            $.alert("请输入短信验证码！");
+
+        } else if (${empty bank.spdbStcardNo} && !$("#weuiAgree").is(":checked")) {
+            $.alert("请选择同意在浦发银行开设专户电子账户！");
+
         } else {
             $.ajax({
 				type : "POST",
@@ -163,7 +190,8 @@
 					'repayAccBank' : $("p[class='repayAccBank']").text(),
 					'repayAccBankCode' : $("input[name='repayAccBankCode']").val(),
 					'repayCardNo' : trim($("input[name='repayCardNo']").val()),
-					'bankPhone' : trim($("input[name='bankPhone']").val())
+					'bankPhone' : trim($("input[name='bankPhone']").val()),
+					'verifyCode' : trim($("input[name='verifyCode']").val())
 				},
 				success : function(data) {
 					var obj = eval('(' + data + ')');
@@ -180,7 +208,6 @@
         } 
     }
 
-	
     function selectCardType() {
         weui.picker([{'label':'储蓄卡', 'value':'储蓄卡'}], {
             className: 'custom-classname',
@@ -193,10 +220,11 @@
 
     
 	/**
-	* 发送一键支付短信验证码
+	* 发送短信验证码
 	*/
     function sendVerifyCode() {
-        if (!/^13[0-9]{9}$|14[0-9]{9}|15[0-9]{9}$|18[0-9]{9}$/.test($("input[name='bankPhone']").val())) {
+        //if (!/^13[0-9]{9}$|14[0-9]{9}|15[0-9]{9}$|17[0-9]{9}$|18[0-9]{9}$/.test($("input[name='bankPhone']").val())) {
+        if (!/^13[0-9]{9}$|14[0-9]{9}$|15[0-9]{9}$|16[0-9]{9}$|17[0-9]{9}$|18[0-9]{9}$|19[0-9]{9}$/.test($("input[name='bankPhone']").val())) {
         	$.alert("请输入正确的11位手机号码");
             return;
         } else if($("p[class='repayAccBank']").text()=="") {
@@ -209,9 +237,8 @@
         	$(".weui-vcode-btn").attr("disabled", "disabled");
         	$.ajax({
 	            type : "POST",
-	            url : "${ctx}/register/authentication",
+	            url : "${ctx}/register/sendVerifyCode",
 	            datatype : "json",
-	            async: false,
 	            data : {
 	               "repayAccBank" : $("p[class='repayAccBank']").text(),
 	               "repayAccBankCode" : $("input[name='repayAccBankCode']").val(),
@@ -232,7 +259,7 @@
 					$.alert("短信验证码发送出错！");
 					$(".weui-vcode-btn").removeAttr("disabled"); //启用按钮
 				}
-			});  
+			});
         }
     }
 
@@ -248,16 +275,6 @@
             curCount--;
             $(".weui-vcode-btn").text(curCount + "秒内输入");
         }
-    }
-
-
-    function isFileSizeLimit(file) {
-    	/*var filesize = Math.round((file.files[0].size)/1024/1024);
-		 if(filesize > 5) {
-			$.alert("文件不能大于5M！");
-			return false;
-		} */
-		return true;
     }
 
     function uploadImage(file, img, type) {
@@ -354,7 +371,6 @@
 
  	// 上传图片
     function previewImage(file, v) {
-    	//if(isFileSizeLimit(file)) {
     		$.showLoading();
     		var type = "bankInfo"+v;
 	    	var div = document.getElementById('preview'+v);
@@ -376,7 +392,6 @@
 	            status = ('rect:' + rect.top + ',' + rect.left + ',' + rect.width + ',' + rect.height);
 	            div.innerHTML = "<div id=divhead style='width:" + rect.width + "px;height:" + rect.height + "px;" + sFilter + src + "\"'></div>";
 	        }
-    	//}
     }
 
     function turnback() {

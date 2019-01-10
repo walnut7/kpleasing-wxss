@@ -30,6 +30,17 @@ public interface LoginService {
 
 	
 	/**
+	 * 根据微信openid获取用户信息
+	 * @param loginUser 
+	 * 
+	 * @param openId
+	 * @return
+	 * @throws WXSSException 
+	 */
+	public LoginUser getLoginUserByOpenId(String openId) throws WXSSException;
+	
+	
+	/**
 	 * 注册用户
 	 * 
 	 * @param loginUser

@@ -1,6 +1,7 @@
 package com.kpleasing.wxss.web.service.impl;
 
 import java.io.Serializable;
+import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jboss.logging.Logger;
@@ -24,6 +25,7 @@ import com.kpleasing.wxss.esb.action.Leasing009Action;
 import com.kpleasing.wxss.esb.response.LEASING009Response;
 import com.kpleasing.wxss.exception.WXSSException;
 import com.kpleasing.wxss.pojo.LoginUser;
+import com.kpleasing.wxss.pojo.SearchParam;
 import com.kpleasing.wxss.util.DateUtil;
 import com.kpleasing.wxss.web.service.ConfigService;
 import com.kpleasing.wxss.web.service.OrderService;
@@ -73,6 +75,17 @@ public class OrderServiceImpl implements Serializable, OrderService {
 			order.setCreateAt(DateUtil.getDate());
 			order.setUpdateAt(DateUtil.getDate());
 			orderDao.save(order);
+		}
+		return order;
+	}
+	
+	
+	@Override
+	public Order getCurrentOrderByCustId(String custid) throws WXSSException {
+		Order order = (Order) orderDao.findByCustId(Integer.valueOf(custid));
+		if(null == order) {
+			logger.error("用户信息不存在！");
+			throw new WXSSException("ERROR", "用户信息不存在！");
 		}
 		return order;
 	}
@@ -180,8 +193,14 @@ public class OrderServiceImpl implements Serializable, OrderService {
 	
 	@Override
 	public String getRunningOrder(String custId) throws WXSSException {
+		return getRunningOrder(custId, false);
+	}
+	
+	
+	@Override
+	public String getRunningOrder(String custId, boolean flag) throws WXSSException {
 		Order order = (Order) orderDao.findByCustId(Integer.valueOf(custId));
-		if(order.getLoginChannel()==LOGIN_TYPE.MANUAL.CODE) {
+		if(flag || order.getLoginChannel()==LOGIN_TYPE.MANUAL.CODE) {
 			logger.info("start to search order info .....");
 			Leasing009Action leasing009Action = SpringContextHolder.getBean(Leasing009Action.class);
 			
@@ -196,4 +215,17 @@ public class OrderServiceImpl implements Serializable, OrderService {
 			return null;
 		}
 	}
+
+
+	@Override
+	public List<Order> getAllOrderList(SearchParam  parameter) {
+		return orderDao.findOrderSortByUpdate(parameter);
+	}
+
+
+	@Override
+	public int getTotalOrderCount(SearchParam parameter) {
+		return orderDao.countTotalOrders(parameter);
+	}
+
 }

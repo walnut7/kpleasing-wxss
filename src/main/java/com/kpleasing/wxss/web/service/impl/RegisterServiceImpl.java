@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.jboss.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -12,17 +13,21 @@ import org.springframework.transaction.annotation.Transactional;
 import com.kpleasing.wxss.config.Configurate;
 import com.kpleasing.wxss.dao.BankInfoDao;
 import com.kpleasing.wxss.dao.CertInfoDao;
+import com.kpleasing.wxss.dao.ContactInfoDao;
 import com.kpleasing.wxss.dao.DrivingLicenseInfoDao;
 import com.kpleasing.wxss.dao.FaceVideoDao;
 import com.kpleasing.wxss.dao.OrderDao;
 import com.kpleasing.wxss.dao.PersonInfoDao;
+import com.kpleasing.wxss.dao.SchemeDao;
 import com.kpleasing.wxss.dao.WorkInfoDao;
 import com.kpleasing.wxss.entity.BankInfo;
 import com.kpleasing.wxss.entity.CertInfo;
+import com.kpleasing.wxss.entity.ContactInfo;
 import com.kpleasing.wxss.entity.DrivingLicenseInfo;
 import com.kpleasing.wxss.entity.FaceVideo;
 import com.kpleasing.wxss.entity.Order;
 import com.kpleasing.wxss.entity.PersonInfo;
+import com.kpleasing.wxss.entity.Scheme;
 import com.kpleasing.wxss.entity.WorkInfo;
 import com.kpleasing.wxss.enums.LOGIN_TYPE;
 import com.kpleasing.wxss.esb.action.CRM007Action;
@@ -30,15 +35,23 @@ import com.kpleasing.wxss.esb.action.CRM010Action;
 import com.kpleasing.wxss.esb.action.Leasing007Action;
 import com.kpleasing.wxss.esb.action.Leasing016Action;
 import com.kpleasing.wxss.esb.action.Leasing017Action;
+import com.kpleasing.wxss.esb.action.Leasing018Action;
+import com.kpleasing.wxss.esb.action.Leasing019Action;
+import com.kpleasing.wxss.esb.action.Leasing020Action;
 import com.kpleasing.wxss.esb.action.XMC001Action;
 import com.kpleasing.wxss.esb.response.CRM007Response;
 import com.kpleasing.wxss.esb.response.CRM010Response;
 import com.kpleasing.wxss.esb.response.LEASING007Response;
 import com.kpleasing.wxss.esb.response.LEASING016Response;
 import com.kpleasing.wxss.esb.response.LEASING017Response;
+import com.kpleasing.wxss.esb.response.LEASING018Response;
+import com.kpleasing.wxss.esb.response.LEASING019Response;
 import com.kpleasing.wxss.esb.response.XMC001Response;
 import com.kpleasing.wxss.exception.WXSSException;
+import com.kpleasing.wxss.mongo.collections.SpdbInterfaceLogCollection;
+import com.kpleasing.wxss.mongo.dao.SpdbInterfaceLogCollectionDao;
 import com.kpleasing.wxss.util.DateUtil;
+import com.kpleasing.wxss.util.SPDBHelper;
 import com.kpleasing.wxss.util.StringUtil;
 import com.kpleasing.wxss.web.service.ConfigService;
 import com.kpleasing.wxss.web.service.OrderService;
@@ -70,6 +83,9 @@ public class RegisterServiceImpl implements Serializable, RegisterService {
 	private PersonInfoDao personInfoDao;
 	
 	@Autowired
+	private ContactInfoDao contactInfoDao;
+	
+	@Autowired
 	private WorkInfoDao workInfoDao;
 	
 	@Autowired
@@ -80,6 +96,12 @@ public class RegisterServiceImpl implements Serializable, RegisterService {
 	
 	@Autowired
 	private OrderService orderService;
+	
+	@Autowired
+	private SchemeDao schemeDao;
+	
+	@Autowired
+	private SpdbInterfaceLogCollectionDao spdbInterfaceLogCollectionDao;
 	
 	@Override
 	public void saveCertInfoA(String custId, CertInfo certInfo) throws WXSSException {
@@ -176,7 +198,30 @@ public class RegisterServiceImpl implements Serializable, RegisterService {
 
 
 	@Override
-	public BankInfo queryBankInfoByCustId(String custId) {
+	public BankInfo queryBankInfoByCustId(String custId) throws WXSSException {
+		CertInfo certInfo = certInfoDao.findByUserId(Integer.valueOf(custId));
+		if(null==certInfo) throw new WXSSException("ERROR", "请先至身份证信息页面补充身份证信息！");
+		
+		logger.info("查询客户开户信息......");
+		Configurate config = configService.getConfig();
+		Leasing019Action leasing019Action = SpringContextHolder.getBean(Leasing019Action.class);
+		
+		LEASING019Response leasing019Response = leasing019Action.doRequest(config, certInfo.getCertId(), null);
+		if("SUCCESS".equals(leasing019Response.getResult_code())) {
+			if(StringUtils.isNotBlank(leasing019Response.getSpdb_stCard_no())) {
+				BankInfo bank = bankInfoDao.findByUserId(Integer.valueOf(custId));
+				if(null == bank) {
+					bank = new BankInfo();
+					bank.setUserId(Integer.valueOf(custId));
+					bank.setSpdbStcardNo(leasing019Response.getSpdb_stCard_no());
+					bankInfoDao.save(bank);
+				} else {
+					bank.setSpdbStcardNo(leasing019Response.getSpdb_stCard_no());
+					bankInfoDao.update(bank);
+				}
+				return bank;
+			}
+		}
 		return bankInfoDao.findByUserId(Integer.valueOf(custId));
 	}
 	
@@ -230,9 +275,6 @@ public class RegisterServiceImpl implements Serializable, RegisterService {
 	public void saveBankInfo(String custId, BankInfo bankInfo) throws WXSSException {
 		Order order = (Order) orderDao.findByCustId(Integer.valueOf(custId));
 		if(null != order) {
-			logger.info("更新订单信息步骤号....");
-			orderService.updateStepNo(order, (byte) 5);
-		
 			BankInfo bank = bankInfoDao.findByUserId(order.getCustId());
 			if(null == bank) {
 				logger.info("保存银行账户信息....");
@@ -247,6 +289,20 @@ public class RegisterServiceImpl implements Serializable, RegisterService {
 				bankInfoDao.update(bank);
 			}
 		} else { throw new WXSSException("ERROR", "【"+custId+"】账户下订单不存在......"); }
+	}
+	
+	
+	@Override
+	public void updateSpdbFlag(String custid, byte flag) throws WXSSException {
+		BankInfo bank = queryBankInfoByCustId(custid);
+		if(null == bank) {
+			bank = new BankInfo();
+			bank.setUserId(Integer.valueOf(custid));
+			bankInfoDao.save(bank);
+		} else {
+			bank.setSpdbFlag((byte) 1);
+			bankInfoDao.update(bank);
+		}
 	}
 	
 	
@@ -323,6 +379,52 @@ public class RegisterServiceImpl implements Serializable, RegisterService {
 			}
 		} else { throw new WXSSException("ERROR", "【"+custId+"】账户下订单不存在......"); }
 	}
+	
+	@Override
+	public ContactInfo queryContactInfoByCustId(String custId) {
+		return contactInfoDao.findByUserId(Integer.valueOf(custId));
+	}
+	
+	@Override
+	public void saveContactInfo(String custId, ContactInfo contactInfo) throws WXSSException {
+		Order order = (Order) orderDao.findByCustId(Integer.valueOf(custId));
+		if(null != order) {
+			logger.info("更新订单信息步骤号....");
+			orderService.updateStepNo(order, (byte) 7);
+		
+			ContactInfo contact = contactInfoDao.findByUserId(order.getCustId());
+			if(null == contact) {
+				logger.info("保存联系人信息....");
+				contactInfo.setUserId(order.getCustId());
+				contactInfoDao.save(contactInfo);
+			} else {
+				logger.info("更新联系人信息....");
+				contact.setSpouseName(contactInfo.getSpouseName());
+				contact.setSpouseCertType(contactInfo.getSpouseCertType());
+				contact.setSpouseCertId(contactInfo.getSpouseCertId());
+				contact.setSpousePhone(contactInfo.getSpousePhone());
+				contact.setSpouseAnnualIncome(contactInfo.getSpouseAnnualIncome());
+				contact.setSpouseAnnualIncomeCode(contactInfo.getSpouseAnnualIncomeCode());
+				contact.setSpouseIncomeFrom(contactInfo.getSpouseIncomeFrom());
+				contact.setSpouseIncomeFromCode(contactInfo.getSpouseIncomeFromCode());
+				contact.setSpouseWorkUnit(contactInfo.getSpouseWorkUnit());
+				contact.setContactRelation(contactInfo.getContactRelation());
+				contact.setContactRelationCode(contactInfo.getContactRelationCode());
+				contact.setContactName(contactInfo.getContactName());
+				contact.setContactCertType(contactInfo.getContactCertType());
+				contact.setContactCertId(contactInfo.getContactCertId());
+				contact.setContactPhone(contactInfo.getContactPhone());
+				contact.setContact2Relation(contactInfo.getContact2Relation());
+				contact.setContact2RelationCode(contactInfo.getContact2RelationCode());
+				contact.setContact2Name(contactInfo.getContact2Name());
+				contact.setContact2CertType(contactInfo.getContact2CertType());
+				contact.setContact2CertId(contactInfo.getContact2CertId());
+				contact.setContact2Phone(contactInfo.getContact2Phone());
+				
+				contactInfoDao.update(contact);
+			}
+		} else { throw new WXSSException("ERROR", "【"+custId+"】账户下订单不存在......"); }
+	}
 
 
 	@Override
@@ -336,7 +438,7 @@ public class RegisterServiceImpl implements Serializable, RegisterService {
 		Order order = (Order) orderDao.findByCustId(Integer.valueOf(custId));
 		if(null != order) {
 			logger.info("更新订单信息步骤号....");
-			order.setStepNo((byte)7);
+			order.setStepNo((byte)8);
 			order.setUpdateAt(DateUtil.getDate());
 			orderDao.update(order);
 		
@@ -365,6 +467,25 @@ public class RegisterServiceImpl implements Serializable, RegisterService {
 	
 	
 	@Override
+	public void doIdentityAuth(Order order) throws WXSSException {
+		logger.info("开始认证客户【"+order.getCustId()+"】 身份信息 .....");
+		Leasing018Action leasing018Action = SpringContextHolder.getBean(Leasing018Action.class);
+		
+		Configurate config = configService.getConfig();
+		LEASING018Response leasing018Response = leasing018Action.doRequest(config, order, null);
+		
+		if(!"SUCCESS".equals(leasing018Response.getResult_code())) {
+			throw new WXSSException("ERROR", order.getPhone() +"非客户"+ order.getUserName() +"实名认证手机号");
+//			throw new WXSSException("ERROR", leasing018Response.getResult_desc());
+		}/*else{
+			if(leasing018Response.getAuth_status()==null || "1".equals(leasing018Response.getAuth_status())){
+				throw new WXSSException("ERROR", "姓名、手机号、身份证三要素认证未通过");
+			}
+		}*/
+	}
+	
+	
+	@Override
 	public void syncCustomerInfo(Order order) throws WXSSException {
 		logger.info("开始提交客户【"+order.getCustId()+"】 信息 .....");
 		CRM007Action crm007Action = SpringContextHolder.getBean(CRM007Action.class);
@@ -382,12 +503,13 @@ public class RegisterServiceImpl implements Serializable, RegisterService {
 	public void createLeasingOrder(Order order) throws WXSSException {
 		logger.info("starting begin order.....");
 		Leasing007Action leasing007Action = SpringContextHolder.getBean(Leasing007Action.class);
-		
-		Configurate config = configService.getConfig();
-		LEASING007Response leasing007Response = leasing007Action.doRequest(config, order, null);
-		
-		if(!"SUCCESS".equals(leasing007Response.getResult_code())) {
-			throw new WXSSException("ERROR", leasing007Response.getResult_desc());
+		synchronized(leasing007Action) {
+			Configurate config = configService.getConfig();
+			LEASING007Response leasing007Response = leasing007Action.doRequest(config, order, null);
+			
+			if(!"SUCCESS".equals(leasing007Response.getResult_code())) {
+				throw new WXSSException("ERROR", leasing007Response.getResult_desc());
+			}
 		}
 	}
 
@@ -504,14 +626,14 @@ public class RegisterServiceImpl implements Serializable, RegisterService {
 	public FaceVideo savePerVideoAudit(String custId, FaceVideo faceVideo) {
 		FaceVideo videoAudit = faceVideoDao.findByCustId(Integer.valueOf(custId));
 		CertInfo certInfo = certInfoDao.findByUserId(Integer.valueOf(custId));
-		if(videoAudit != null){
+		if(videoAudit != null) {
 			videoAudit.setCustName(certInfo.getUserName());
 			videoAudit.setFirstDate(faceVideo.getFirstDate());
 			videoAudit.setSecondDate(faceVideo.getSecondDate());
 			videoAudit.setUpdateAt(DateUtil.getDate());
 			faceVideoDao.update(videoAudit);
 			return videoAudit;
-		}else{
+		} else {
 			faceVideo.setCustId(Integer.valueOf(custId));
 			faceVideo.setCustName(certInfo.getUserName());
 			faceVideo.setCreateAt(DateUtil.getDate());
@@ -552,13 +674,184 @@ public class RegisterServiceImpl implements Serializable, RegisterService {
 			Configurate config = configService.getConfig();
 			XMC001Response xmc001Response = xmc001Action.doRequest(config, custId, null);
 			
-//			if(!"SUCCESS".equals(xmc001Response.getResult_code())) {
-//				throw new WXSSException("ERROR", xmc001Response.getResult_desc());
-//			}
+			/*if("SUCCESS".equals(xmc001Response.getResult_code())) {
+				throw new WXSSException("ERROR", xmc001Response.getResult_desc());
+			}*/
 		} catch (WXSSException e) {
 			logger.error(e.getDesc(), e);
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e);
 		}
+	}
+	
+	
+	private SpdbInterfaceLogCollection getSpdbInterfaceLog(String custId) {
+		SpdbInterfaceLogCollection spdbInterfaceLogCollection = new SpdbInterfaceLogCollection();
+		try {
+			Order order = orderDao.findByCustId(Integer.valueOf(custId));
+			spdbInterfaceLogCollection.setCust_id(Integer.valueOf(custId));
+			spdbInterfaceLogCollection.setCust_name(order.getUserName());
+			spdbInterfaceLogCollection.setCert_type(order.getCertType());
+			spdbInterfaceLogCollection.setCert_code(order.getCertId());
+			spdbInterfaceLogCollection.setPhone(order.getPhone());
+		} catch(Exception e) {
+			logger.error(e.getMessage(), e);
+		}
+		return spdbInterfaceLogCollection;
+	}
+
+
+	@Override
+	public void SendSpdbVerifyCode(String custId, BankInfo bankInfo) throws WXSSException {
+		SpdbInterfaceLogCollection spdbLog = getSpdbInterfaceLog(custId);
+		
+		Configurate config = configService.getConfig();
+		Map<String, Object> mapResultData = SPDBHelper.doSpdbGetAuthrCode(config, bankInfo.getBankPhone(), spdbLog);
+		String resultCode = (String) mapResultData.get("statusCode");
+		spdbInterfaceLogCollectionDao.insertSpdbInterfaceLogCollection(spdbLog, "GET_AUTHR_CODE", resultCode);
+		
+		if("0000".equals(resultCode)) {
+			BankInfo bank = bankInfoDao.findByUserId(Integer.valueOf(custId));
+			if(null == bank) {
+				logger.info("保存二、三类户验证码....");
+				bank = new BankInfo();
+				bank.setUserId(Integer.valueOf(custId));
+//				bank.setSpdbVerifyCode((String)mapResultData.get("randomPassword"));
+				bank.setSmsSendtime(DateUtil.getCurrentDate(DateUtil.yyyy_MM_ddHHmmss));
+				bank.setRepayAccBank(bankInfo.getRepayAccBank());
+				bank.setRepayAccBankCode(bankInfo.getRepayAccBankCode());
+				bank.setBankPhone(bankInfo.getBankPhone());
+				bank.setRepayCardNo(bankInfo.getRepayCardNo());
+				bankInfoDao.save(bank);
+			} else {
+				logger.info("更新二、三类户验证码....");
+//				bank.setSpdbVerifyCode((String)mapResultData.get("randomPassword"));
+				bank.setSmsSendtime(DateUtil.getCurrentDate(DateUtil.yyyy_MM_ddHHmmss));
+				bank.setRepayAccBank(bankInfo.getRepayAccBank());
+				bank.setRepayAccBankCode(bankInfo.getRepayAccBankCode());
+				bank.setBankPhone(bankInfo.getBankPhone());
+				bank.setRepayCardNo(bankInfo.getRepayCardNo());
+				bankInfoDao.update(bank);
+			}
+		} else {
+			String msgError = SPDBHelper.getReflectErrorInfo(resultCode, (String)mapResultData.get("statusMsg"));
+			throw new WXSSException("ERROR", "验证码发送错误，错误代码【"+msgError+"】");
+		}
+	}
+
+
+	@Override
+	public void openSpdbAccount(String custId, String verifyCode) throws WXSSException {
+		String msgError = null;
+		SpdbInterfaceLogCollection spdbLog = getSpdbInterfaceLog(custId);
+		BankInfo bank = bankInfoDao.findByUserId(Integer.valueOf(custId));
+		if(null==bank) throw new WXSSException("ERROR", "账户信息不存在！");
+		
+		CertInfo cert = (CertInfo) certInfoDao.findByUserId(Integer.valueOf(custId));
+		if(null == cert) {
+			throw new WXSSException("ERROR", "证件信息不存在！");
+		}
+		
+		if(StringUtils.isBlank(bank.getSpdbCertCode()) || bank.getSpdbCertCode().equals(cert.getCertId())) {
+			if(bank.getSpdbFlag() == (byte)1 || StringUtils.isNotBlank(bank.getSpdbStcardNo())) return;
+		}
+		
+		Configurate config = configService.getConfig();
+		String image1 = config.IMG_PATH + cert.getCertFrontImagePath();
+		String image2 = config.IMG_PATH + cert.getCertBackImagePath();
+		Map<String, Object> mapMediaUploadData = SPDBHelper.doSpdbMediaUpload(config, image1, image2, spdbLog);
+		String resultCode = (String) mapMediaUploadData.get("statusCode");
+		spdbInterfaceLogCollectionDao.insertSpdbInterfaceLogCollection(spdbLog, "MEDIA_UPLOAD", resultCode);
+		
+		if("0000".equals(resultCode)) {
+			mapMediaUploadData.put("custname", cert.getUserName());
+			mapMediaUploadData.put("address", cert.getCertAddr());
+			mapMediaUploadData.put("mobileNum", bank.getBankPhone());
+			mapMediaUploadData.put("bankNum", bank.getRepayAccBankCode());
+			mapMediaUploadData.put("cardNum", bank.getRepayCardNo());
+			mapMediaUploadData.put("memberId", custId);
+			mapMediaUploadData.put("randomPassword", verifyCode);
+			if(StringUtils.isNotBlank((String)mapMediaUploadData.get("idNo"))) {
+				bank.setSpdbCertCode((String) mapMediaUploadData.get("idNo"));
+			}
+			
+			Map<String, Object> mapOpenAccountData = SPDBHelper.doSpdbOpenAccount(config, mapMediaUploadData, spdbLog);
+			resultCode = (String) mapOpenAccountData.get("statusCode");
+			spdbInterfaceLogCollectionDao.insertSpdbInterfaceLogCollection(spdbLog, "OPEN_ACCOUNT", resultCode);
+			
+			if("0000".equals(resultCode)) {
+				String uuid = (String) mapOpenAccountData.get("uuid");
+				bank.setSpdbUuid(uuid);
+				bank.setSpdbOpenAccountTime(DateUtil.getDate());
+				bankInfoDao.update(bank);
+				
+				Map<String, Object> mapQueryAccountData = SPDBHelper.doSpdbQueryAccount(config, uuid, spdbLog);
+				resultCode = (String) mapQueryAccountData.get("statusCode");
+				spdbInterfaceLogCollectionDao.insertSpdbInterfaceLogCollection(spdbLog, "QUERY_ACCOUNT", resultCode);
+				
+				if("0000".equals(resultCode)) {
+					bank.setSpdbAccountId((String) mapQueryAccountData.get("accountId"));
+					bank.setSpdbStcardNo((String) mapQueryAccountData.get("stCardNum"));
+					bank.setSpdbAccountType((String) mapQueryAccountData.get("openTypeFlag"));
+					bankInfoDao.update(bank);
+					
+					logger.info("更新订单信息步骤号....");
+					Order order = (Order) orderDao.findByCustId(Integer.valueOf(custId));
+					orderService.updateStepNo(order, (byte) 5);
+					
+					// 通知开户账户 
+					final Map<String, String> __map = new HashMap<String, String>();
+					__map.put("certCode", cert.getCertId());
+					__map.put("stCardNo", (String) mapQueryAccountData.get("stCardNum"));
+					new Thread() {
+						public void run() {
+							Leasing020Action leasing020Action = SpringContextHolder.getBean(Leasing020Action.class);
+							Configurate config = configService.getConfig();
+							try {
+								leasing020Action.doRequest(config, null, __map);
+							} catch (WXSSException e) {
+								e.printStackTrace();
+							}
+						}
+					}.start();
+					
+				} else {
+					msgError = SPDBHelper.getReflectErrorInfo((String)mapQueryAccountData.get("statusCode"), (String)mapQueryAccountData.get("statusMsg"));
+					if(!msgError.equals("SUCCESS")) {
+						throw new WXSSException("ERROR", "开户失败！失败信息【"+msgError+"】！");
+					} else {
+						bank.setSpdbFlag((byte) 1);
+						bankInfoDao.update(bank);
+					}
+				}
+			} else {
+				msgError = SPDBHelper.getReflectErrorInfo((String)mapOpenAccountData.get("statusCode"), (String)mapOpenAccountData.get("statusMsg"));
+				if(!msgError.equals("SUCCESS")) {
+					throw new WXSSException("ERROR", "开户出错！错信信息【"+msgError+"】！");
+				} else {
+					bank.setSpdbFlag((byte) 1);
+					bankInfoDao.update(bank);
+				}
+			}
+		} else {
+			msgError = SPDBHelper.getReflectErrorInfo((String)mapMediaUploadData.get("statusCode"), (String)mapMediaUploadData.get("statusMsg"));
+			if(!msgError.equals("SUCCESS")) {
+				throw new WXSSException("ERROR", "开户证件信息上传失败！错信码【"+mapMediaUploadData.get("statusMsg")+"】！");
+			} else {
+				bank.setSpdbFlag((byte) 1);
+				bankInfoDao.update(bank);
+			}
+		}
+	}
+
+
+	
+	@Override
+	public String getSchemePlanType(Order order) {
+		if(null != order && null != order.getPlanId()) {
+			Scheme scheme = schemeDao.findSchemeByPlanId(order.getPlanId());
+			return scheme.getPlanType();
+		}
+		return null;
 	}
 }

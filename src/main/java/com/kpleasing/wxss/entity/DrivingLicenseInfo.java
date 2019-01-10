@@ -54,7 +54,11 @@ public class DrivingLicenseInfo implements java.io.Serializable {
 	}
 
 	public void setDriveType(String driveType) {
-		this.driveType = driveType;
+		if(null!=driveType) {
+			this.driveType = driveType.replaceAll("\\s", "");
+		} else {
+			this.driveType = driveType;
+		}
 	}
 
 	@Column(name = "drive_type_desc", length = 20)
@@ -63,7 +67,11 @@ public class DrivingLicenseInfo implements java.io.Serializable {
 	}
 
 	public void setDriveTypeDesc(String driveTypeDesc) {
-		this.driveTypeDesc = driveTypeDesc;
+		if(null!=driveTypeDesc) {
+			this.driveTypeDesc = driveTypeDesc.replaceAll("\\s", "");
+		} else {
+			this.driveTypeDesc = driveTypeDesc;
+		}
 	}
 
 	@Temporal(TemporalType.DATE)

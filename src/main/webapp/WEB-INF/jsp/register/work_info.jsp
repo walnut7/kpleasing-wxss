@@ -49,7 +49,7 @@
       			<div class="weui-cell weui-cell_vcode">
         			<div class="weui-cell__hd"><label class="weui-label">入职年限</label></div>
         			<div class="weui-cell__bd">
-          				<input class="weui-input" type="text" name="entryYear" onkeyup="value=value.replace(/[^\d]/g,'')" placeholder="" value="${work.entryYear}" >
+          				<input class="weui-input" type="tel" name="entryYear" onkeyup="value=value.replace(/[^\d]/g,'')" placeholder="" value="${work.entryYear}" >
         			</div>
         			<div class="weui-cell__ft"><p class="weui-vcode-btn">年</p></div>
       			</div>
@@ -62,7 +62,7 @@
       			<div class="weui-cell">
         			<div class="weui-cell__hd"><label class="weui-label">单位电话</label></div>
         			<div class="weui-cell__bd">
-          				<input class="weui-input" type="text" name="unitTel" placeholder="" value="${work.unitTel}" >
+          				<input class="weui-input" type="tel" name="unitTel" onkeyup="value=value.replace(/[^\d-]/g,'')" placeholder="" value="${work.unitTel}" >
         			</div>
       			</div>
       			<div class="weui-cell">
@@ -74,7 +74,7 @@
       			<div class="weui-cell">
         			<div class="weui-cell__hd"><label class="weui-label">年收入</label></div>
         			<div class="weui-cell__bd">
-          				<input class="weui-input" type="text" name="annualIncome" onkeyup="value=value.replace(/[^\d.]/g,'')" placeholder="" value="${work.annualIncome}" >
+          				<input class="weui-input"  type="number" pattern="\d*" name="annualIncome" onkeyup="value=value.replace(/[^\d.]/g,'')" placeholder="" value="${work.annualIncome}" >
         			</div>
       			</div>
       			<div class="weui-cell" onclick="javascript:select('51','incomestatus','incomeStatus');">
@@ -92,7 +92,7 @@
       			<div class="weui-cell weui-cell_vcode">
         			<div class="weui-cell__hd"><label class="weui-label">工作年限</label></div>
         			<div class="weui-cell__bd">
-          				<input class="weui-input" type="text" name="workYear" onkeyup="value=value.replace(/[^\d]/g,'')" placeholder="" value="${work.workYear}" >
+          				<input class="weui-input" type="tel" name="workYear" onkeyup="value=value.replace(/[^\d]/g,'')" placeholder="" value="${work.workYear}" >
         			</div>
         			<div class="weui-cell__ft"><p class="weui-vcode-btn">年</p></div>
       			</div>
@@ -166,7 +166,7 @@
     }
 
     function turnback() {
-		window.location.href = "${ctx}/register/personInfo";
+		window.location.href = "${ctx}/register/contactInfo";
 	}
     </script>
 </body>

@@ -27,6 +27,17 @@ public class Configurate implements Serializable {
 	public String FV_IMG_URL = null;
 	public String WXSS_LOGIN_KEY = null;
 	public String AUTO_LOGIN_TIMEOUT = null;
+	public String SPDB_SECRET = null;
+	public String SPDB_CLIENT_ID = null;
+	public String SPDB_BIZ_SCENE1 = null;
+	public String SPDB_BIZ_SCENE2 = null;
+	public String SPDB_INST_NUM = null;
+	public String SPDB_GET_AUTHR_CODE_URL = null;
+	public String SPDB_MEDIA_UPLOAD_URL = null;
+	public String SPDB_OPEN_ACCOUNT_URL = null;
+	public String SPDB_QUERY_ACCOUNT_URL = null;
+	public String LEASING_CONTACT_URL = null;
+	public String LEASING_CONTACT_KEY = null;
 	
 	private List<SecurityKey> securityKeyList;
     

@@ -80,7 +80,11 @@ public class CertInfo implements java.io.Serializable {
 	}
 
 	public void setUserName(String userName) {
-		this.userName = userName;
+		if(null!=userName) {
+			this.userName = userName.replaceAll("\\s", "");
+		} else {
+			this.userName = userName;
+		}
 	}
 
 	@Column(name = "gender", length = 10)
@@ -89,7 +93,11 @@ public class CertInfo implements java.io.Serializable {
 	}
 
 	public void setGender(String gender) {
-		this.gender = gender;
+		if(null!=gender) {
+			this.gender = gender.replaceAll("\\s", "");
+		} else {
+			this.gender = gender;
+		}
 	}
 
 	@Column(name = "gender_code", length = 20)
@@ -98,7 +106,11 @@ public class CertInfo implements java.io.Serializable {
 	}
 
 	public void setGenderCode(String genderCode) {
-		this.genderCode = genderCode;
+		if(null!=genderCode) {
+			this.genderCode = genderCode.replaceAll("\\s", "");
+		} else {
+			this.genderCode = genderCode;
+		}
 	}
 
 	@Column(name = "nation", length = 10)
@@ -107,7 +119,11 @@ public class CertInfo implements java.io.Serializable {
 	}
 
 	public void setNation(String nation) {
-		this.nation = nation;
+		if(null!=nation) {
+			this.nation = nation.replaceAll("\\s", "");;
+		} else {
+			this.nation = nation;
+		}
 	}
 
 	@Temporal(TemporalType.DATE)
@@ -126,7 +142,11 @@ public class CertInfo implements java.io.Serializable {
 	}
 
 	public void setLiveAddr(String liveAddr) {
-		this.liveAddr = liveAddr;
+		if(null!=liveAddr) {
+			this.liveAddr = liveAddr.replaceAll("\\s", "");
+		} else {
+			this.liveAddr = liveAddr;
+		}
 	}
 
 	@Column(name = "cert_type", length = 10)
@@ -135,7 +155,11 @@ public class CertInfo implements java.io.Serializable {
 	}
 
 	public void setCertType(String certType) {
-		this.certType = certType;
+		if(null!=certType) {
+			this.certType = certType.replaceAll("\\s", "");
+		} else {
+			this.certType = certType;
+		}
 	}
 
 	@Column(name = "cert_id", length = 18)
@@ -144,7 +168,11 @@ public class CertInfo implements java.io.Serializable {
 	}
 
 	public void setCertId(String certId) {
-		this.certId = certId;
+		if(null!=certId) {
+			this.certId = certId.replaceAll("\\s", "");
+		} else {
+			this.certId = certId;
+		}
 	}
 
 	@Column(name = "cert_addr")
@@ -153,7 +181,11 @@ public class CertInfo implements java.io.Serializable {
 	}
 
 	public void setCertAddr(String certAddr) {
-		this.certAddr = certAddr;
+		if(null!=certAddr) {
+			this.certAddr = certAddr.replaceAll("\\s", "");
+		} else {
+			this.certAddr = certAddr;
+		}
 	}
 
 	@Column(name = "cert_front_image_path", length = 60)

@@ -50,6 +50,8 @@ public class SyncFinSchemeRequest extends RequestHead implements Serializable {
 	private String valid_date_from;
 	
 	private String valid_date_to;
+	
+	private String plan_synopsis;
 
 	public String getPlan_id() {
 		return plan_id;
@@ -225,6 +227,14 @@ public class SyncFinSchemeRequest extends RequestHead implements Serializable {
 
 	public void setValid_date_to(String valid_date_to) {
 		this.valid_date_to = valid_date_to;
+	}
+
+	public String getPlan_synopsis() {
+		return plan_synopsis;
+	}
+
+	public void setPlan_synopsis(String plan_synopsis) {
+		this.plan_synopsis = plan_synopsis;
 	}
 
 }

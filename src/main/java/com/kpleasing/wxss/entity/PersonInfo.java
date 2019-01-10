@@ -113,7 +113,11 @@ public class PersonInfo implements java.io.Serializable {
 	}
 
 	public void setUserName(String userName) {
-		this.userName = userName;
+		if(userName != null){
+			this.userName = userName.replaceAll("\\s", "");
+		}else{
+			this.userName = userName;
+		}
 	}
 
 	@Column(name = "live_status", nullable = false, length = 20)
@@ -122,7 +126,11 @@ public class PersonInfo implements java.io.Serializable {
 	}
 
 	public void setLiveStatus(String liveStatus) {
-		this.liveStatus = liveStatus;
+		if(liveStatus != null){
+			this.liveStatus = liveStatus.replaceAll("\\s", "");
+		}else{
+			this.liveStatus = liveStatus;
+		}
 	}
 
 	@Column(name = "live_status_code", nullable = false, length = 20)
@@ -131,7 +139,11 @@ public class PersonInfo implements java.io.Serializable {
 	}
 
 	public void setLiveStatusCode(String liveStatusCode) {
-		this.liveStatusCode = liveStatusCode;
+		if(liveStatusCode != null){
+			this.liveStatusCode = liveStatusCode.replaceAll("\\s", "");
+		}else{
+			this.liveStatusCode = liveStatusCode;
+		}
 	}
 
 	@Column(name = "edu_level", nullable = false, length = 20)
@@ -140,7 +152,11 @@ public class PersonInfo implements java.io.Serializable {
 	}
 
 	public void setEduLevel(String eduLevel) {
-		this.eduLevel = eduLevel;
+		if(eduLevel != null){
+			this.eduLevel = eduLevel.replaceAll("\\s", "");
+		}else{
+			this.eduLevel = eduLevel;
+		}
 	}
 
 	@Column(name = "edu_level_code", nullable = false, length = 20)
@@ -149,7 +165,11 @@ public class PersonInfo implements java.io.Serializable {
 	}
 
 	public void setEduLevelCode(String eduLevelCode) {
-		this.eduLevelCode = eduLevelCode;
+		if(eduLevelCode != null){
+			this.eduLevelCode = eduLevelCode.replaceAll("\\s", "");
+		}else{
+			this.eduLevelCode = eduLevelCode;
+		}
 	}
 
 	@Column(name = "province", nullable = false, length = 20)
@@ -158,7 +178,11 @@ public class PersonInfo implements java.io.Serializable {
 	}
 
 	public void setProvince(String province) {
-		this.province = province;
+		if(province != null){
+			this.province = province.replaceAll("\\s", "");
+		}else{
+			this.province = province;
+		}
 	}
 
 	@Column(name = "city", nullable = false, length = 20)
@@ -167,7 +191,11 @@ public class PersonInfo implements java.io.Serializable {
 	}
 
 	public void setCity(String city) {
-		this.city = city;
+		if(city != null){
+			this.city = city.replaceAll("\\s", "");
+		}else{
+			this.city = city;
+		}
 	}
 
 	@Column(name = "family_addr", nullable = false, length = 100)
@@ -176,7 +204,11 @@ public class PersonInfo implements java.io.Serializable {
 	}
 
 	public void setFamilyAddr(String familyAddr) {
-		this.familyAddr = familyAddr;
+		if(familyAddr != null){
+			this.familyAddr = familyAddr.replaceAll("\\s", "");
+		}else{
+			this.familyAddr = familyAddr;
+		}
 	}
 
 	@Column(name = "family_phone", nullable = false, length = 100)
@@ -185,7 +217,11 @@ public class PersonInfo implements java.io.Serializable {
 	}
 
 	public void setFamilyPhone(String familyPhone) {
-		this.familyPhone = familyPhone;
+		if(familyPhone != null){
+			this.familyPhone = familyPhone.replaceAll("\\s", "");
+		}else{
+			this.familyPhone = familyPhone;
+		}
 	}
 
 	@Column(name = "email", nullable = false, length = 60)
@@ -194,7 +230,11 @@ public class PersonInfo implements java.io.Serializable {
 	}
 
 	public void setEmail(String email) {
-		this.email = email;
+		if(email != null){
+			this.email = email.replaceAll("\\s", "");
+		}else{
+			this.email = email;
+		}
 	}
 
 	@Column(name = "marr_status", nullable = false, length = 20)
@@ -203,7 +243,11 @@ public class PersonInfo implements java.io.Serializable {
 	}
 
 	public void setMarrStatus(String marrStatus) {
-		this.marrStatus = marrStatus;
+		if(marrStatus != null){
+			this.marrStatus = marrStatus.replaceAll("\\s", "");
+		}else{
+			this.marrStatus = marrStatus;
+		}
 	}
 
 	@Column(name = "marr_status_code", nullable = false, length = 20)
@@ -212,7 +256,11 @@ public class PersonInfo implements java.io.Serializable {
 	}
 
 	public void setMarrStatusCode(String marrStatusCode) {
-		this.marrStatusCode = marrStatusCode;
+		if(marrStatusCode != null){
+			this.marrStatusCode = marrStatusCode.replaceAll("\\s", "");
+		}else{
+			this.marrStatusCode = marrStatusCode;
+		}
 	}
 
 	@Column(name = "spouse_name", length = 10)
@@ -221,7 +269,11 @@ public class PersonInfo implements java.io.Serializable {
 	}
 
 	public void setSpouseName(String spouseName) {
-		this.spouseName = spouseName;
+		if(spouseName != null){
+			this.spouseName = spouseName.replaceAll("\\s", "");
+		}else{
+			this.spouseName = spouseName;
+		}
 	}
 
 	@Column(name = "spouse_cert_type", length = 10)
@@ -230,7 +282,11 @@ public class PersonInfo implements java.io.Serializable {
 	}
 
 	public void setSpouseCertType(String spouseCertType) {
-		this.spouseCertType = spouseCertType;
+		if(spouseCertType != null){
+			this.spouseCertType = spouseCertType.replaceAll("\\s", "");
+		}else{
+			this.spouseCertType = spouseCertType;
+		}
 	}
 
 	@Column(name = "spouse_cert_id", length = 18)
@@ -239,7 +295,11 @@ public class PersonInfo implements java.io.Serializable {
 	}
 
 	public void setSpouseCertId(String spouseCertId) {
-		this.spouseCertId = spouseCertId;
+		if(spouseCertId != null){
+			this.spouseCertId = spouseCertId.replaceAll("\\s", "");
+		}else{
+			this.spouseCertId = spouseCertId;
+		}
 	}
 
 	@Column(name = "spouse_phone", length = 11)
@@ -248,7 +308,11 @@ public class PersonInfo implements java.io.Serializable {
 	}
 
 	public void setSpousePhone(String spousePhone) {
-		this.spousePhone = spousePhone;
+		if(spousePhone != null){
+			this.spousePhone = spousePhone.replaceAll("\\s", "");
+		}else{
+			this.spousePhone = spousePhone;
+		}
 	}
 
 	@Column(name = "spouse_annual_income", length = 20)
@@ -257,7 +321,11 @@ public class PersonInfo implements java.io.Serializable {
 	}
 
 	public void setSpouseAnnualIncome(String spouseAnnualIncome) {
-		this.spouseAnnualIncome = spouseAnnualIncome;
+		if(spouseAnnualIncome != null){
+			this.spouseAnnualIncome = spouseAnnualIncome.replaceAll("\\s", "");
+		}else{
+			this.spouseAnnualIncome = spouseAnnualIncome;
+		}
 	}
 
 	@Column(name = "spouse_annual_income_code", length = 20)
@@ -266,7 +334,11 @@ public class PersonInfo implements java.io.Serializable {
 	}
 
 	public void setSpouseAnnualIncomeCode(String spouseAnnualIncomeCode) {
-		this.spouseAnnualIncomeCode = spouseAnnualIncomeCode;
+		if(spouseAnnualIncomeCode != null){
+			this.spouseAnnualIncomeCode = spouseAnnualIncomeCode.replaceAll("\\s", "");
+		}else{
+			this.spouseAnnualIncomeCode = spouseAnnualIncomeCode;
+		}
 	}
 
 	@Column(name = "spouse_income_from", length = 20)
@@ -293,7 +365,11 @@ public class PersonInfo implements java.io.Serializable {
 	}
 
 	public void setSpouseWorkUnit(String spouseWorkUnit) {
-		this.spouseWorkUnit = spouseWorkUnit;
+		if(spouseWorkUnit !=null){
+			this.spouseWorkUnit = spouseWorkUnit.replaceAll("\\s", "");
+		}else{
+			this.spouseWorkUnit = spouseWorkUnit;
+		}
 	}
 
 	@Column(name = "contact_relation", length = 20)
@@ -302,7 +378,11 @@ public class PersonInfo implements java.io.Serializable {
 	}
 
 	public void setContactRelation(String contactRelation) {
-		this.contactRelation = contactRelation;
+		if(contactRelation !=null){
+			this.contactRelation = contactRelation.replaceAll("\\s", "");
+		}else{
+			this.contactRelation = contactRelation;
+		}
 	}
 
 	@Column(name = "contact_relation_code", length = 20)
@@ -320,7 +400,11 @@ public class PersonInfo implements java.io.Serializable {
 	}
 
 	public void setContactName(String contactName) {
-		this.contactName = contactName;
+		if(contactName != null){
+			this.contactName = contactName.replaceAll("\\s", "");
+		}else{
+			this.contactName = contactName;
+		}
 	}
 
 	@Column(name = "contact_cert_type", length = 20)
@@ -329,7 +413,11 @@ public class PersonInfo implements java.io.Serializable {
 	}
 
 	public void setContactCertType(String contactCertType) {
-		this.contactCertType = contactCertType;
+		if(contactCertType != null){
+			this.contactCertType = contactCertType.replaceAll("\\s", "");
+		}else{
+			this.contactCertType = contactCertType;
+		}
 	}
 
 	@Column(name = "contact_cert_id", length = 20)
@@ -338,7 +426,11 @@ public class PersonInfo implements java.io.Serializable {
 	}
 
 	public void setContactCertId(String contactCertId) {
-		this.contactCertId = contactCertId;
+		if(contactCertId != null){
+			this.contactCertId = contactCertId.replaceAll("\\s", "");
+		}else{
+			this.contactCertId = contactCertId;
+		}
 	}
 
 	@Column(name = "contact_phone", length = 11)
@@ -347,6 +439,10 @@ public class PersonInfo implements java.io.Serializable {
 	}
 
 	public void setContactPhone(String contactPhone) {
-		this.contactPhone = contactPhone;
+		if(contactPhone != null){
+			this.contactPhone = contactPhone.replaceAll("\\s", "");
+		}else{
+			this.contactPhone = contactPhone;
+		}
 	}
 }

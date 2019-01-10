@@ -2,6 +2,7 @@ package com.kpleasing.wxss.web.service;
 
 import com.kpleasing.wxss.entity.BankInfo;
 import com.kpleasing.wxss.entity.CertInfo;
+import com.kpleasing.wxss.entity.ContactInfo;
 import com.kpleasing.wxss.entity.DrivingLicenseInfo;
 import com.kpleasing.wxss.entity.FaceVideo;
 import com.kpleasing.wxss.entity.Order;
@@ -68,8 +69,9 @@ public interface RegisterService {
 	 * 
 	 * @param custId
 	 * @return
+	 * @throws WXSSException 
 	 */
-	public BankInfo queryBankInfoByCustId(String custId);
+	public BankInfo queryBankInfoByCustId(String custId) throws WXSSException;
 
 
 	/**
@@ -87,7 +89,23 @@ public interface RegisterService {
 	 * @return
 	 */
 	public PersonInfo queryPersonInfoByCustId(String custId);
-
+	
+	
+	/**
+	 * 
+	 * @param custId
+	 * @param contactInfo
+	 */
+	public void saveContactInfo(String custId, ContactInfo contactInfo) throws WXSSException ;
+	
+	
+	/**
+	 * 
+	 * @param custId
+	 * @return
+	 */
+	public ContactInfo queryContactInfoByCustId(String custId);
+	
 	
 	/**
 	 * 
@@ -106,6 +124,14 @@ public interface RegisterService {
 	public void saveWorkInfo(String custId, WorkInfo workInfo) throws WXSSException;
 
 
+	/**
+	 * 
+	 * @param order
+	 * @throws Exception 
+	 */
+	public void doIdentityAuth(Order order) throws Exception;
+	
+	
 	/**
 	 * 
 	 * @param order
@@ -212,4 +238,39 @@ public interface RegisterService {
 	 * @throws WXSSException 
 	 */
 	public void doFirstAudit(String custId) ;
+
+	
+	/**
+	 * @throws WXSSException 
+	 * 
+	 */
+	public void SendSpdbVerifyCode(String custId, BankInfo bankInfo) throws WXSSException;
+
+
+	
+	/**
+	 * 
+	 * @param custId
+	 * @param verifyCode
+	 * @throws WXSSException 
+	 */
+	public void openSpdbAccount(String custId, String verifyCode) throws WXSSException;
+
+
+	
+	/**
+	 * 
+	 * @param order
+	 */
+	public String getSchemePlanType(Order order);
+
+
+	/**
+	 * 
+	 * @param custid
+	 * @param flag
+	 * @throws WXSSException 
+	 */
+	public void updateSpdbFlag(String custid, byte flag) throws WXSSException;
+
 }

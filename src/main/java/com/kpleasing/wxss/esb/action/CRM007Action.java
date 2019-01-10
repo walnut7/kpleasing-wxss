@@ -60,13 +60,13 @@ public class CRM007Action extends AbastractBaseAction<CRM007Request, CRM007Respo
 		crm007Request.setPosition(order.getWorkInfo().getPosition());
 		crm007Request.setEdu_level(order.getPersonInfo().getEduLevelCode());
 		crm007Request.setMarr_status(order.getPersonInfo().getMarrStatusCode());
-		crm007Request.setSpouse_name(order.getPersonInfo().getSpouseName());
-		crm007Request.setSpouse_cert_type(order.getPersonInfo().getSpouseCertType());
-		crm007Request.setSpouse_cert_code(order.getPersonInfo().getSpouseCertId());
-		crm007Request.setSpouse_phone(order.getPersonInfo().getSpousePhone());
-		crm007Request.setSpouse_income_from(order.getPersonInfo().getSpouseIncomeFromCode());
-		crm007Request.setSpouse_annual_income(order.getPersonInfo().getSpouseAnnualIncomeCode());
-		crm007Request.setSpouse_work_unit(order.getPersonInfo().getSpouseWorkUnit());
+		crm007Request.setSpouse_name(order.getContactInfo().getSpouseName());
+		crm007Request.setSpouse_cert_type(order.getContactInfo().getSpouseCertType());
+		crm007Request.setSpouse_cert_code(order.getContactInfo().getSpouseCertId());
+		crm007Request.setSpouse_phone(order.getContactInfo().getSpousePhone());
+		crm007Request.setSpouse_income_from(order.getContactInfo().getSpouseIncomeFromCode());
+		crm007Request.setSpouse_annual_income(order.getContactInfo().getSpouseAnnualIncomeCode());
+		crm007Request.setSpouse_work_unit(order.getContactInfo().getSpouseWorkUnit());
 		crm007Request.setWork_year(order.getWorkInfo().getWorkYear());
 		crm007Request.setUnit_tel(order.getWorkInfo().getUnitTel());
 		crm007Request.setEmail(order.getPersonInfo().getEmail());
@@ -115,29 +115,44 @@ public class CRM007Action extends AbastractBaseAction<CRM007Request, CRM007Respo
 		List<CRM007ContactBean> contacts = new ArrayList<CRM007ContactBean>();
 		CRM007ContactBean contact = new CRM007ContactBean();
 		if(!"MARRIED".equals(order.getPersonInfo().getMarrStatusCode())) {
-			contact.setRelation(order.getPersonInfo().getContactRelationCode());
-			contact.setContact_name(order.getPersonInfo().getContactName());
+			contact.setRelation(order.getContactInfo().getContactRelationCode());
+			contact.setContact_name(order.getContactInfo().getContactName());
 			contact.setIs_important_contact("");
-			contact.setContact_cert_type(order.getPersonInfo().getContactCertType());
-			contact.setContact_cert_code(order.getPersonInfo().getContactCertId());
+			contact.setContact_cert_type(order.getContactInfo().getContactCertType());
+			contact.setContact_cert_code(order.getContactInfo().getContactCertId());
 			contact.setContact_work_unit("");
-			contact.setContact_phone(order.getPersonInfo().getContactPhone());
+			contact.setContact_phone(order.getContactInfo().getContactPhone());
 			contact.setContact_email("");
 			contact.setContact_fax("");
 			contact.setContact_addr("");
 		} else {
 			contact.setRelation("2");
-			contact.setContact_name(order.getPersonInfo().getSpouseName());
+			contact.setContact_name(order.getContactInfo().getSpouseName());
 			contact.setIs_important_contact("");
-			contact.setContact_cert_type(order.getPersonInfo().getSpouseCertType());
-			contact.setContact_cert_code(order.getPersonInfo().getSpouseCertId());
+			contact.setContact_cert_type(order.getContactInfo().getSpouseCertType());
+			contact.setContact_cert_code(order.getContactInfo().getSpouseCertId());
 			contact.setContact_work_unit("");
-			contact.setContact_phone(order.getPersonInfo().getSpousePhone());
+			contact.setContact_phone(order.getContactInfo().getSpousePhone());
 			contact.setContact_email("");
 			contact.setContact_fax("");
 			contact.setContact_addr("");
 		}
 		contacts.add(contact);
+		
+		//紧急联系人2
+		CRM007ContactBean contact2 = new CRM007ContactBean();
+		contact2.setRelation(order.getContactInfo().getContact2RelationCode());
+		contact2.setContact_name(order.getContactInfo().getContact2Name());
+		contact2.setIs_important_contact("");
+		contact2.setContact_cert_type(order.getContactInfo().getContact2CertType());
+		contact2.setContact_cert_code(order.getContactInfo().getContact2CertId());
+		contact2.setContact_work_unit("");
+		contact2.setContact_phone(order.getContactInfo().getContact2Phone());
+		contact2.setContact_email("");
+		contact2.setContact_fax("");
+		contact2.setContact_addr("");
+		contacts.add(contact2);
+		
 		crm007Request.setContacts(contacts);
 		
 		List<CRM007AccountBean> accounts = new ArrayList<CRM007AccountBean>();

@@ -14,9 +14,6 @@ import com.kpleasing.wxss.entity.DrivingLicenseInfo;
 
 
 public class BaiDuAipOcrHelper {
-	public static final String APP_ID = "11072072";
-	public static final String API_KEY = "VLnGkN42C2lLNc87KfuNNxM7";
-	public static final String SECRET_KEY = "oQ3YrqCDFcd6tApCFtH7rUSX32NEG0zA";
 	private static Logger logger = Logger.getLogger(BaiDuAipOcrHelper.class);
 	private static BaiDuAipOcrHelper instance;
 	private AipOcr aipOcr;
@@ -30,7 +27,8 @@ public class BaiDuAipOcrHelper {
 	
 	
 	public BaiDuAipOcrHelper() {
-		aipOcr = new AipOcr(APP_ID, API_KEY, SECRET_KEY);
+		ConfigUtil conf = ConfigUtil.getInstance();
+		aipOcr = new AipOcr(conf.getPropertyParam("aip.baidu.app_id"), conf.getPropertyParam("aip.baidu.app_key"), conf.getPropertyParam("aip.baidu.secret_key"));
 		aipOcr.setConnectionTimeoutInMillis(2000);
 		aipOcr.setSocketTimeoutInMillis(60000);
     }

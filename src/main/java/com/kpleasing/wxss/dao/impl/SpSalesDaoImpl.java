@@ -21,6 +21,12 @@ public class SpSalesDaoImpl extends BaseDaoImpl<SpSales, Integer> implements SpS
 		List<SpSales> saleslist = this.findByProperty("saleId", saleId);
 		return (saleslist!=null && saleslist.size()>0)?saleslist.get(0):null;
 	}
+
+	@Override
+	public List<SpSales> findSalesListByBpId(Integer bpId) {
+		String queryString = "from SpSales as model where model.bpId=? and model.enabledFlag=0 order by model.saleName ASC ";
+		return this.find(queryString, bpId);
+	}
 	
 	@Override
 	public void updateSalesBySQL(Integer bpId) {
@@ -34,4 +40,5 @@ public class SpSalesDaoImpl extends BaseDaoImpl<SpSales, Integer> implements SpS
 		//tx.commit();
 		//session.close();
 	}
+
 }

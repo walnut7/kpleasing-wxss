@@ -262,6 +262,7 @@ public class APIServiceImpl implements APIService,Serializable {
 				scheme.setBuyoutAmount(syncFinSchemeRequest.getBuyout_amount());
 				scheme.setValidDateFrom(syncFinSchemeRequest.getValid_date_from());
 				scheme.setValidDateTo(syncFinSchemeRequest.getValid_date_to());
+				scheme.setPlanSynopsis(syncFinSchemeRequest.getPlan_synopsis());
 				scheme.setCreateAt(DateUtil.getDate());
 				scheme.setUpdateAt(DateUtil.getDate());
 				schemeDaoImpl.save(scheme);
@@ -288,6 +289,7 @@ public class APIServiceImpl implements APIService,Serializable {
 				scheme.setBuyoutAmount(syncFinSchemeRequest.getBuyout_amount());
 				scheme.setValidDateFrom(syncFinSchemeRequest.getValid_date_from());
 				scheme.setValidDateTo(syncFinSchemeRequest.getValid_date_to());
+				scheme.setPlanSynopsis(syncFinSchemeRequest.getPlan_synopsis());
 				scheme.setUpdateAt(DateUtil.getDate());
 				schemeDaoImpl.update(scheme);
 			}

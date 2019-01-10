@@ -142,6 +142,36 @@ public class LoginServiceImpl implements Serializable, LoginService {
 			throw new WXSSException("FAILED", "信息查询出错！");
 		}
 	}
+	
+	
+	@Override
+	public LoginUser getLoginUserByOpenId(String openId) throws WXSSException {
+		try {
+			Map<String, String> map = new HashMap<String, String>();
+			map.put("ChannelType", "1");
+			map.put("ChannelCode", openId);
+			
+			logger.info("channel_Id="+ openId);
+			Configurate config = configService.getConfig();
+			CRM002Action crm002Action = SpringContextHolder.getBean(CRM002Action.class);
+			CRM002Response crm002Response = crm002Action.doRequest(config, "", map);
+			
+			if("SUCCESS".equals(crm002Response.getResult_code())) {
+				LoginUser sysUser = new LoginUser();
+				sysUser.setUserId(crm002Response.getCust_id());
+				sysUser.setPhone(crm002Response.getPhone());
+				sysUser.setUserName(crm002Response.getCust_name());
+				sysUser.setLoginType(LOGIN_TYPE.MANUAL.CODE);
+				sysUser.setCertCode(crm002Response.getCert_code());
+				
+				return sysUser;
+			}
+			return null;
+		} catch (WXSSException e) {
+			logger.error("login info error:", e);
+			throw new WXSSException("FAILED", "信息查询出错！");
+		}
+	}
 
 
 	@Override
@@ -194,7 +224,8 @@ public class LoginServiceImpl implements Serializable, LoginService {
 
 	@Override
 	public List<SpSales> getSaleListByBpId(String bpId) {
-		return salesDao.findByProperty("bpId", Integer.valueOf(bpId));
+		//return salesDao.findByProperty("bpId", Integer.valueOf(bpId));
+		return salesDao.findSalesListByBpId(Integer.valueOf(bpId));
 	}
 
 

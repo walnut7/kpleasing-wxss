@@ -25,6 +25,7 @@ import com.kpleasing.wxss.config.Configurate;
 import com.kpleasing.wxss.entity.BankInfo;
 import com.kpleasing.wxss.entity.CertInfo;
 import com.kpleasing.wxss.entity.City;
+import com.kpleasing.wxss.entity.ContactInfo;
 import com.kpleasing.wxss.entity.DictConfig;
 import com.kpleasing.wxss.entity.DrivingLicenseInfo;
 import com.kpleasing.wxss.entity.FaceVideo;
@@ -39,6 +40,7 @@ import com.kpleasing.wxss.util.BaiDuAipOcrHelper;
 import com.kpleasing.wxss.util.DateUtil;
 import com.kpleasing.wxss.util.FileUtil;
 import com.kpleasing.wxss.util.JsonUtil;
+import com.kpleasing.wxss.util.SPDBHelper;
 import com.kpleasing.wxss.util.Security;
 import com.kpleasing.wxss.util.StringUtil;
 import com.kpleasing.wxss.web.service.ConfigService;
@@ -63,7 +65,7 @@ public class RegisterController extends BaseController {
 	@Autowired
 	private ConfigService configService;
 	
-	@RequestMapping(value = "route", method = RequestMethod.GET)
+	@RequestMapping(value = "route")
 	public String doRegisterRoute(HttpServletRequest request, HttpServletResponse response) {
 		try {
 			LoginUser loginUser = getLoginUserObject(request);
@@ -77,6 +79,12 @@ public class RegisterController extends BaseController {
 			orderService.initFaceVideoInfo(loginUser.getUserId(), bpId, planId);
 			
 			if(null != order) {
+				if(LOGIN_TYPE.MANUAL.CODE == order.getLoginChannel()) {
+					if(null == order.getBpId() || null == order.getPlanId()) {
+						return "redirect:/logout";
+					}
+				}
+				
 				logger.info("start register......当前步骤=" + order.getStepNo());
 				switch (order.getStepNo()) {
 				    case 0:  ;
@@ -85,9 +93,9 @@ public class RegisterController extends BaseController {
 				    case 3: return "redirect:driverInfo";
 				    case 4: return "redirect:bankInfo";
 				    case 5: return "redirect:personInfo";
-				    case 6: return "redirect:workInfo";
-				    case 7: return "redirect:confirm";
-				    case 8: ;
+				    case 6: return "redirect:contactInfo";
+				    case 7: return "redirect:workInfo";
+				    case 8: return "redirect:confirm";
 				    case 9: ;
 				    case 10: return "redirect:faceVideo";
 				    //case 10: return "redirect:videoAudit";
@@ -275,10 +283,19 @@ public class RegisterController extends BaseController {
 	public ModelAndView redirectBankInfo(HttpServletRequest request, HttpServletResponse response) {
 		ModelMap model = new ModelMap();
 		try {
+			LoginUser loginUser = getLoginUserObject(request);
+			Order order = orderService.getCurrentOrderByLoginUser(loginUser);
+			
 			String custId = this.getLoginUserCustId(request);
 			logger.info("查询【"+custId+"】用户提交的信息......");
 			BankInfo bankInfo = registerService.queryBankInfoByCustId(custId);
+			model.put("spdb_cert_flag", 1);
 			if(null!=bankInfo) {
+				if(StringUtils.isNotBlank(bankInfo.getSpdbCertCode())) {
+					if(!bankInfo.getSpdbCertCode().equals(order.getCertId())) {
+						model.put("spdb_cert_flag", 0);
+					}
+				}
 				model.put("bank", bankInfo);
 			}
 		} catch (WXSSException e) {
@@ -289,15 +306,15 @@ public class RegisterController extends BaseController {
 	
 	
 	/**
-	 * 一键支付鉴权
+	 * 浦发银行-随机密码获取
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping(value = "authentication", method = RequestMethod.POST)
-	public @ResponseBody String payAuthentication(HttpServletRequest request, BankInfo bankInfo) {
+	@RequestMapping(value = "sendVerifyCode", method = RequestMethod.POST)
+	public @ResponseBody String sendSPDBVerifyCode(HttpServletRequest request, BankInfo bankInfo) {
 		try {
 			String custId = this.getLoginUserCustId(request);
-			registerService.payAuthentication(custId, bankInfo);
+			registerService.SendSpdbVerifyCode(custId, bankInfo);
 			
 			return "{\"result\":\"success\",\"message\":\"短信已发送，请注意查收！\"}";
 		} catch(WXSSException e) {
@@ -311,7 +328,7 @@ public class RegisterController extends BaseController {
 	
 	
 	/**
-	 * 保存银行账户相关信息
+	  * 保存银行账户相关信息
 	 * @param request
 	 * @param driverInfo
 	 * @return
@@ -321,7 +338,7 @@ public class RegisterController extends BaseController {
 		try {
 			logger.info("save bank info ......");
 			String custId = this.getLoginUserCustId(request);
-			//String verifyCode = request.getParameter("verifyCode");
+			String verifyCode = request.getParameter("verifyCode");
 			
 			String applyNo = orderService.getRunningOrder(custId);
 			if(StringUtils.isNotBlank(applyNo)) {
@@ -332,14 +349,15 @@ public class RegisterController extends BaseController {
 			// 保存信息
 			registerService.saveBankInfo(custId, bankInfo);
 			
-			// 一键支付绑定
-			// registerService.bindPayment(custId, verifyCode);
+			// 浦发二、三类户开户
+			registerService.openSpdbAccount(custId, verifyCode);
 			
 			
 			return "{\"result\":\"success\",\"message\":\"操作成功!\"}";
 		} catch (WXSSException e) {
-			logger.error(e.getMessage(), e);
-			return "{\"result\":\"failed\",\"message\":\""+e.getDesc()+"\"}";
+			String errorMsg = SPDBHelper.getReflectErrorInfo(null, e.getDesc());
+			logger.error("开户错误提示信息："+errorMsg , e);
+			return "{\"result\":\"failed\",\"message\":\""+errorMsg+"\"}";
 		} catch(Exception e) {
 			logger.error(e.getMessage(), e);
 		}
@@ -393,6 +411,66 @@ public class RegisterController extends BaseController {
 				return "{\"result\":\"failed\",\"message\":\"您当前含有未完成的订单，订单号："+applyNo+".\"}";
 			}
 			registerService.savePersonInfo(custId, personInfo);
+			
+			return "{\"result\":\"success\",\"message\":\"保存成功!\"}";
+		} catch (WXSSException e) {
+			logger.error(e.getMessage(), e);
+		} catch(Exception e) {
+			logger.error(e.getMessage(), e);
+		}
+		return "{\"result\":\"failed\",\"message\":\"提交失败!\"}";
+	}
+	
+
+	/**
+	 * 跳转至联系人页面
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping(value = "contactInfo", method = RequestMethod.GET)
+	public ModelAndView redirectContactInfo(HttpServletRequest request, HttpServletResponse response) {
+		ModelMap model = new ModelMap();
+		try {
+			String custId = this.getLoginUserCustId(request);
+			logger.info("查询【"+custId+"】用户婚姻状态......");
+			PersonInfo personInfo = registerService.queryPersonInfoByCustId(custId);
+			if(null!=personInfo) {
+				model.put("marrycode", personInfo.getMarrStatusCode());
+			}
+			
+			logger.info("查询【"+custId+"】用户提交的联系人信息......");
+			ContactInfo contactInfo = registerService.queryContactInfoByCustId(custId);
+			if(null!=contactInfo) {
+				model.put("contact", contactInfo);
+			}
+		} catch (WXSSException e) {
+			logger.error(e.getMessage(), e);
+		} catch(Exception e) {
+			logger.error(e.getMessage(), e);
+		}
+		return new ModelAndView("register/contact_info", model);
+	}
+	
+	
+	/**
+	 * 保存联系人信息
+	 * @param request
+	 * @param contactInfo
+	 * @return
+	 */
+	@RequestMapping(value = "saveContactInfo", method = RequestMethod.POST)
+	public @ResponseBody String saveContactInfo(HttpServletRequest request, ContactInfo contactInfo) {
+		try {
+			logger.info("start save driving license info ......" );
+			String custId = this.getLoginUserCustId(request);
+			
+			String applyNo = orderService.getRunningOrder(custId);
+			if(StringUtils.isNotBlank(applyNo)) {
+				logger.info("系统含有进行中的订单："+applyNo);
+				return "{\"result\":\"failed\",\"message\":\"您当前含有未完成的订单，订单号："+applyNo+".\"}";
+			}
+			registerService.saveContactInfo(custId, contactInfo);
 			
 			return "{\"result\":\"success\",\"message\":\"保存成功!\"}";
 		} catch (WXSSException e) {
@@ -482,7 +560,7 @@ public class RegisterController extends BaseController {
 		return new ModelAndView("register/confirm", model);
 	}
 	
-	
+	 
 	/**
 	 * 
 	 * @param request
@@ -502,16 +580,22 @@ public class RegisterController extends BaseController {
 				return "{\"result\":\"failed\",\"message\":\"您当前含有未完成的订单，订单号："+applyNo+".\"}";
 			}
 			
+			// 身份认证
+			if(order.getLoginChannel()==LOGIN_TYPE.MANUAL.CODE) {
+				logger.info("身份认证.");
+				registerService.doIdentityAuth(order); 
+			}
+			
 			// 同步用户信息
 			registerService.syncCustomerInfo(order);
 			
-			// 创建订单&添加身份认证
+			// 创建订单
 			if(order.getLoginChannel()==LOGIN_TYPE.MANUAL.CODE) {
+				logger.info("认证同步.");
+				registerService.doFirstAudit(custId);
+				
 				logger.info("创建订单.");
 				registerService.createLeasingOrder(order);
-				
-				logger.info("身份认证.");
-				registerService.doFirstAudit(custId);
 			}
 			
 			// 更新步骤号
@@ -612,12 +696,18 @@ public class RegisterController extends BaseController {
 	@RequestMapping(value = "getSelectParamList", method = RequestMethod.POST)
 	public @ResponseBody String getDictParamList(HttpServletRequest request, String category) {
 		try {
+			Order order = orderService.getCurrentOrderByLoginUser(getLoginUserObject(request));
+			String pType = registerService.getSchemePlanType(order);
+			
 			StringBuilder strDict = new StringBuilder();
 			List<DictConfig> dicts = configService.getDictByPId(Integer.valueOf(category));
 			strDict.append("[");
 			for(DictConfig dict : dicts) {
 				strDict.append("{\"label\":\"").append(dict.getNodeValue()).append("\",")
 				       .append("\"value\":\"").append(dict.getNodeCode()).append("\",},");
+			}
+			if(null != pType && "BO".equals(pType) && "86".equals(category)) {
+				strDict.append("{\"label\":\"中国招商银行\",\"value\":\"CMB\",},");
 			}
 			strDict.append("]");
 			return strDict.toString();
@@ -702,7 +792,7 @@ public class RegisterController extends BaseController {
 				if("cert".equals(type)) {
 					// 默认解析身份证（配偶身份证，紧急联系人身份证信息）
 					long start = System.currentTimeMillis();
-//					CertInfo certInfo = ocrHelper.readIdCardFront(fullpath);
+					// CertInfo certInfo = ocrHelper.readIdCardFront(fullpath);
 					CertInfo certInfo = ocrHelper.readIdCardFrontBase64(base64string);
 					long end = System.currentTimeMillis();
 					FileUtil.record("身份证OCR解析起始时间："+start+"\t身份证OCR解析完成时间："+end+"\t总计用时："+ (end-start) + "毫秒\n");

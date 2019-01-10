@@ -6,4 +6,5 @@ public interface PersonInfoDao extends BaseDao<PersonInfo, Integer> {
 
 	public PersonInfo findByUserId(Integer userId);
 
+
 }

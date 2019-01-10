@@ -13,7 +13,7 @@ public class FileUtil {
 	private static final Logger logger = Logger.getLogger(FileUtil.class);
 	
 	public static void record(String str) throws FileNotFoundException {
-		String path = "/opt/tomcat/log/record.txt";
+		String path = "/opt/wxss/log/record.txt";
 		File file=new File(path);
 		FileOutputStream out = null;
 		

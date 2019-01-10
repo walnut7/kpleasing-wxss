@@ -44,6 +44,7 @@ public class Scheme implements java.io.Serializable {
 	private Date createAt;
 	private Date updateAt;
 	private String remark;
+	private String planSynopsis;
 
 	public Scheme() {
 	}
@@ -53,12 +54,12 @@ public class Scheme implements java.io.Serializable {
 		this.modelId = modelId;
 		this.createAt = createAt;
 	}
-
+	
 	public Scheme(int planId, String planDesc, int modelId, String leaseItemAmount, String downpaymentAmount,
 			String depositAmount, String purchaseTax, String insuranceFeeFinancing, String carPlateFee, String gpsFee,
 			String taxinsurance, String pckprice, String leaseTimes, String planType, String rental, String intRate,
 			String rental112, String rental1348, String buyoutAmount, String validDateFrom, String validDateTo,
-			Date createAt, Date updateAt, String remark) {
+			Date createAt, Date updateAt, String remark,String planSynopsis ) {
 		this.planId = planId;
 		this.planDesc = planDesc;
 		this.modelId = modelId;
@@ -83,7 +84,10 @@ public class Scheme implements java.io.Serializable {
 		this.createAt = createAt;
 		this.updateAt = updateAt;
 		this.remark = remark;
+		this.planSynopsis = planSynopsis;
 	}
+	
+	
 
 	@Id
 	@GeneratedValue(strategy = IDENTITY)
@@ -306,7 +310,7 @@ public class Scheme implements java.io.Serializable {
 		this.updateAt = updateAt;
 	}
 
-	@Column(name = "remark")
+	@Column(name = "remark",length = 255)
 	public String getRemark() {
 		return this.remark;
 	}
@@ -314,5 +318,30 @@ public class Scheme implements java.io.Serializable {
 	public void setRemark(String remark) {
 		this.remark = remark;
 	}
+	
+	@Column(name = "plan_synopsis",length = 300)
+	public String getPlanSynopsis() {
+		return this.planSynopsis;
+	}
+
+	public void setPlanSynopsis(String planSynopsis) {
+		this.planSynopsis = planSynopsis;
+	}
+
+	@Override
+	public String toString() {
+		return "Scheme [id=" + id + ", planId=" + planId + ", planDesc=" + planDesc + ", modelId=" + modelId
+				+ ", leaseItemAmount=" + leaseItemAmount + ", downpaymentAmount=" + downpaymentAmount
+				+ ", depositAmount=" + depositAmount + ", purchaseTax=" + purchaseTax + ", insuranceFeeFinancing="
+				+ insuranceFeeFinancing + ", carPlateFee=" + carPlateFee + ", gpsFee=" + gpsFee + ", taxinsurance="
+				+ taxinsurance + ", pckprice=" + pckprice + ", leaseTimes=" + leaseTimes + ", planType=" + planType
+				+ ", rental=" + rental + ", intRate=" + intRate + ", rental112=" + rental112 + ", rental1348="
+				+ rental1348 + ", buyoutAmount=" + buyoutAmount + ", validDateFrom=" + validDateFrom + ", validDateTo="
+				+ validDateTo + ", createAt=" + createAt + ", updateAt=" + updateAt + ", remark=" + remark
+				+ ", planSynopsis=" + planSynopsis + "]";
+	}
+
+	
+	
 
 }

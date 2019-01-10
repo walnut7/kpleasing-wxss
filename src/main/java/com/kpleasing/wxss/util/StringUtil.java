@@ -39,6 +39,7 @@ public class StringUtil {
 		return RandomStringUtils.randomNumeric(6);
 	}
 	
+	
 	    
 	/**
 	 * 中文姓名转换

@@ -16,6 +16,13 @@ public class LoginUser implements Serializable {
 	private String verifCode;
 	private int loginType;
 	private String sign;
+	private int times = 0;
+	
+	private String bpId;
+	private String bpCode;
+	private String modelId;
+	private String planId;
+	private String saleId;
 	
 	public String getUserId() {
 		return userId;
@@ -81,6 +88,14 @@ public class LoginUser implements Serializable {
 		this.sign = sign;
 	}
 
+	public int getTimes() {
+		return times;
+	}
+
+	public void setTimes(int times) {
+		this.times = times;
+	}
+
 	public String getCertCode() {
 		return certCode;
 	}
@@ -105,5 +120,45 @@ public class LoginUser implements Serializable {
 		.append("&time_stamp=").append(this.getTimeStamp())
 		.append("&key=").append(key);
 		return sSign.toString();
+	}
+
+	public String getBpId() {
+		return bpId;
+	}
+
+	public void setBpId(String bpId) {
+		this.bpId = bpId;
+	}
+
+	public String getBpCode() {
+		return bpCode;
+	}
+
+	public void setBpCode(String bpCode) {
+		this.bpCode = bpCode;
+	}
+
+	public String getModelId() {
+		return modelId;
+	}
+
+	public void setModelId(String modelId) {
+		this.modelId = modelId;
+	}
+
+	public String getPlanId() {
+		return planId;
+	}
+
+	public void setPlanId(String planId) {
+		this.planId = planId;
+	}
+
+	public String getSaleId() {
+		return saleId;
+	}
+
+	public void setSaleId(String saleId) {
+		this.saleId = saleId;
 	}
 }

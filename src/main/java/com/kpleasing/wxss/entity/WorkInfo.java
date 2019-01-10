@@ -61,7 +61,11 @@ public class WorkInfo implements java.io.Serializable {
 	}
 
 	public void setWorkUnit(String workUnit) {
-		this.workUnit = workUnit;
+		if(workUnit != null){
+			this.workUnit = workUnit.replaceAll("\\s", "");
+		}else{
+			this.workUnit = workUnit;
+		}
 	}
 
 	@Column(name = "entry_year", nullable = false, length = 20)
@@ -70,7 +74,11 @@ public class WorkInfo implements java.io.Serializable {
 	}
 
 	public void setEntryYear(String entryYear) {
-		this.entryYear = entryYear;
+		if(entryYear != null){
+			this.entryYear = entryYear.replaceAll("\\s", "");
+		}else{
+			this.entryYear = entryYear;
+		}
 	}
 
 	@Column(name = "position", nullable = false, length = 20)
@@ -79,7 +87,11 @@ public class WorkInfo implements java.io.Serializable {
 	}
 
 	public void setPosition(String position) {
-		this.position = position;
+		if(position != null){
+			this.position = position.replaceAll("\\s", "");
+		}else{
+			this.position = position;
+		}
 	}
 
 	@Column(name = "unit_tel", nullable = false, length = 20)
@@ -88,7 +100,11 @@ public class WorkInfo implements java.io.Serializable {
 	}
 
 	public void setUnitTel(String unitTel) {
-		this.unitTel = unitTel;
+		if(unitTel != null){
+			this.unitTel = unitTel.replaceAll("\\s", "");
+		}else{
+			this.unitTel = unitTel;
+		}
 	}
 
 	@Column(name = "income_status", nullable = false, length = 20)
@@ -97,7 +113,11 @@ public class WorkInfo implements java.io.Serializable {
 	}
 
 	public void setIncomeStatus(String incomeStatus) {
-		this.incomeStatus = incomeStatus;
+		if(incomeStatus != null){
+			this.incomeStatus = incomeStatus.replaceAll("\\s", "");
+		}else{
+			this.incomeStatus = incomeStatus;
+		}
 	}
 
 	@Column(name = "income_status_code", nullable = false, length = 20)
@@ -106,7 +126,11 @@ public class WorkInfo implements java.io.Serializable {
 	}
 
 	public void setIncomeStatusCode(String incomeStatusCode) {
-		this.incomeStatusCode = incomeStatusCode;
+		if(incomeStatusCode != null){
+			this.incomeStatusCode = incomeStatusCode.replaceAll("\\s", "");
+		}else{
+			this.incomeStatusCode = incomeStatusCode;
+		}
 	}
 
 	@Column(name = "income_from", nullable = false, length = 20)
@@ -115,7 +139,11 @@ public class WorkInfo implements java.io.Serializable {
 	}
 
 	public void setIncomeFrom(String incomeFrom) {
-		this.incomeFrom = incomeFrom;
+		if(incomeFrom != null){
+			this.incomeFrom = incomeFrom.replaceAll("\\s", "");
+		}else{
+			this.incomeFrom = incomeFrom;
+		}
 	}
 
 	@Column(name = "income_from_code", nullable = false, length = 20)
@@ -124,7 +152,11 @@ public class WorkInfo implements java.io.Serializable {
 	}
 
 	public void setIncomeFromCode(String incomeFromCode) {
-		this.incomeFromCode = incomeFromCode;
+		if(incomeFromCode != null){
+			this.incomeFromCode = incomeFromCode.replaceAll("\\s", "");
+		}else{
+			this.incomeFromCode = incomeFromCode;
+		}
 	}
 
 	@Column(name = "annual_income", nullable = false, length = 20)
@@ -133,7 +165,11 @@ public class WorkInfo implements java.io.Serializable {
 	}
 
 	public void setAnnualIncome(String annualIncome) {
-		this.annualIncome = annualIncome;
+		if(annualIncome != null){
+			this.annualIncome = annualIncome.replaceAll("\\s", "");
+		}else{
+			this.annualIncome = annualIncome;
+		}
 	}
 
 	@Column(name = "work_addr", nullable = false, length = 255)
@@ -142,7 +178,11 @@ public class WorkInfo implements java.io.Serializable {
 	}
 
 	public void setWorkAddr(String workAddr) {
-		this.workAddr = workAddr;
+		if(workAddr != null){
+			this.workAddr = workAddr.replaceAll("\\s", "");
+		}else{
+			this.workAddr = workAddr;
+		}
 	}
 
 	@Column(name = "work_year", nullable = false, length = 10)
@@ -151,6 +191,10 @@ public class WorkInfo implements java.io.Serializable {
 	}
 
 	public void setWorkYear(String workYear) {
-		this.workYear = workYear;
+		if(workYear != null){
+			this.workYear = workYear.replaceAll("\\s", "");
+		}else{
+			this.workYear = workYear;
+		}
 	}
 }

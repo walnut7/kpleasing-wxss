@@ -93,6 +93,17 @@ public class ConfigServiceImpl implements ConfigService {
 			config.FV_IMG_URL = map.get("FV_IMG_URL");
 			config.WXSS_LOGIN_KEY = map.get("WXSS_LOGIN_KEY");
 			config.AUTO_LOGIN_TIMEOUT = map.get("AUTO_LOGIN_TIMEOUT");
+			config.SPDB_SECRET = map.get("SPDB_SECRET");
+			config.SPDB_CLIENT_ID = map.get("SPDB_CLIENT_ID");
+			config.SPDB_BIZ_SCENE1 = map.get("SPDB_BIZ_SCENE1");
+			config.SPDB_BIZ_SCENE2 = map.get("SPDB_BIZ_SCENE2");
+			config.SPDB_INST_NUM = map.get("SPDB_INST_NUM");
+			config.SPDB_GET_AUTHR_CODE_URL = map.get("SPDB_GET_AUTHR_CODE_URL");
+			config.SPDB_MEDIA_UPLOAD_URL = map.get("SPDB_MEDIA_UPLOAD_URL");
+			config.SPDB_OPEN_ACCOUNT_URL = map.get("SPDB_OPEN_ACCOUNT_URL");
+			config.SPDB_QUERY_ACCOUNT_URL = map.get("SPDB_QUERY_ACCOUNT_URL");
+			config.LEASING_CONTACT_URL = map.get("LEASING_CONTACT_URL");
+			config.LEASING_CONTACT_KEY = map.get("LEASING_CONTACT_KEY");
 			
 			config.setSecurityKeyList(securKeyEao.findAll());
 		}

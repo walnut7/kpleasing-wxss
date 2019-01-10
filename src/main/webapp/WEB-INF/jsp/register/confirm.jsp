@@ -155,25 +155,33 @@
 	       <div class="weui-form-preview">
 	       	   <div class="weui-form-preview__hd">
 	               <div class="weui-form-preview__item">
-	                   <label class="weui-form-preview__label">配偶信息</label>
+	                   <label class="weui-form-preview__label">配偶信息（一）</label>
 	               </div>
 	           </div>
 	           <div class="weui-form-preview__bd">
 			       <div class="weui-form-preview__item">
 	                   <label class="weui-form-preview__label">姓名</label>
-	                   <span class="weui-form-preview__value">${order.personInfo.spouseName}</span>
+	                   <span class="weui-form-preview__value">${order.contactInfo.spouseName}</span>
 	                </div>
 	                <div class="weui-form-preview__item">
 	                   <label class="weui-form-preview__label">身份证</label>
-	                   <span class="weui-form-preview__value">${order.personInfo.spouseCertId}</span>
+	                   <span class="weui-form-preview__value">${order.contactInfo.spouseCertId}</span>
 	                </div>
 	                <div class="weui-form-preview__item">
 	                   <label class="weui-form-preview__label">手机号</label>
-	                   <span class="weui-form-preview__value">${order.personInfo.spousePhone}</span>
+	                   <span class="weui-form-preview__value">${order.contactInfo.spousePhone}</span>
 	                </div>
 	                <div class="weui-form-preview__item">
 	                   <label class="weui-form-preview__label">月收入</label>
-	                   <span class="weui-form-preview__value">${order.personInfo.spouseAnnualIncome}</span>
+	                   <span class="weui-form-preview__value">${order.contactInfo.spouseAnnualIncome}</span>
+	                </div>
+	                <div class="weui-form-preview__item">
+	                   <label class="weui-form-preview__label">收入来源</label>
+	                   <span class="weui-form-preview__value">${order.contactInfo.spouseIncomeFrom}</span>
+	                </div>
+	                <div class="weui-form-preview__item">
+	                   <label class="weui-form-preview__label">工作单位</label>
+	                   <span class="weui-form-preview__value">${order.contactInfo.spouseWorkUnit}</span>
 	                </div>
                </div>
            </div>
@@ -182,30 +190,56 @@
 	         <div class="weui-form-preview">
 	           <div class="weui-form-preview__hd">
 	               <div class="weui-form-preview__item">
-	                   <label class="weui-form-preview__label">紧急联系人信息</label>
+	                   <label class="weui-form-preview__label">紧急联系人（一）</label>
 	               </div>
 	           </div>
 	           <div class="weui-form-preview__bd">
 		       	   <div class="weui-form-preview__item">
 	                   <label class="weui-form-preview__label">关系</label>
-	                   <span class="weui-form-preview__value">${order.personInfo.contactRelation}</span>
+	                   <span class="weui-form-preview__value">${order.contactInfo.contactRelation}</span>
 	                  </div>
 	                  <div class="weui-form-preview__item">
 	                   <label class="weui-form-preview__label">姓名</label>
-	                   <span class="weui-form-preview__value">${order.personInfo.contactName}</span>
+	                   <span class="weui-form-preview__value">${order.contactInfo.contactName}</span>
 	                  </div>
 	                  <div class="weui-form-preview__item">
 	                   <label class="weui-form-preview__label">身份证</label>
-	                   <span class="weui-form-preview__value">${order.personInfo.contactCertId}</span>
+	                   <span class="weui-form-preview__value">${order.contactInfo.contactCertId}</span>
 	                  </div>
 	                  <div class="weui-form-preview__item">
 	                   <label class="weui-form-preview__label">手机号</label>
-	                   <span class="weui-form-preview__value">${order.personInfo.contactPhone}</span>
+	                   <span class="weui-form-preview__value">${order.contactInfo.contactPhone}</span>
 	                  </div>
 	               </div>
 	           </div>
 	       </c:otherwise>
 		</c:choose>
+		<br>
+		<div class="weui-form-preview">
+            <div class="weui-form-preview__hd">
+                <div class="weui-form-preview__item">
+                    <label class="weui-form-preview__label">紧急联系人（二）</label>
+                </div>
+            </div>
+            <div class="weui-form-preview__bd">
+                <div class="weui-form-preview__item">
+                    <label class="weui-form-preview__label">关系</label>
+                    <span class="weui-form-preview__value">${order.contactInfo.contact2Relation}</span>
+                </div>
+                <div class="weui-form-preview__item">
+                    <label class="weui-form-preview__label">姓名</label>
+                    <span class="weui-form-preview__value">${order.contactInfo.contact2Name}</span>
+                </div>
+                <div class="weui-form-preview__item">
+                    <label class="weui-form-preview__label">身份证</label>
+                    <span class="weui-form-preview__value">${order.contactInfo.contact2CertId}</span>
+                </div>
+                <div class="weui-form-preview__item">
+                    <label class="weui-form-preview__label">手机号</label>
+                    <span class="weui-form-preview__value">${order.contactInfo.contact2Phone}</span>
+                </div>
+            </div>
+        </div>
         <br>
         <div class="weui-form-preview">
             <div class="weui-form-preview__hd">
@@ -265,7 +299,7 @@
   <div class="weui-popup__modal">
 	<p>申请人声明：	</p>
 	<p style="text-indent:1em;">
-	本人拟以向贵公司申请车辆融资租赁业务，贵公司需要了解本人的信用记录，用于该项业务，因此本人特做出以下授权并清楚理解其含义：
+	本人拟以向坤鹏融资租赁（上海）有限公司（以下简称为“贵公司”）申请车辆融资租赁业务，贵公司需要了解本人的信用记录，用于该项业务，因此本人特做出以下授权并清楚理解其含义：
 	</p>
 	<p style="text-indent:1em;">
 	1.本人同意授权贵公司通过依法成立的征信机构查询本人的征信信息多次，授权期限为业务存续期；
@@ -358,7 +392,9 @@
 
 	function nextbtn() {
         if ($("#weuiAgree").prop("checked") === true) {
-        	$("#btnSubmit").removeClass("wxss-register_btn_div").addClass("wxss-register_btn_disabled_div").removeAttr("onclick");
+        	
+        	$("#btnSubmit").removeClass("wxss-register_btn_div");
+        	$("#btnSubmit").addClass("wxss-register_btn_disabled_div");
             $.ajax({
                 type: "POST",
                 url: "${ctx}/register/submitInfo",
@@ -371,12 +407,13 @@
                 		window.location.href = "${ctx}/register/faceVideo";
                 	} else {
                     	$.alert(obj.message);
-                    	$("#btnSubmit").removeClass("wxss-register_btn_disabled_div").addClass("wxss-register_btn_div").attr("onclick","nextbtn();"); 
-                    }
+                    	$("#btnSubmit").removeClass("wxss-register_btn_disabled_div");
+                    	$("#btnSubmit").addClass("wxss-register_btn_div");                    }
                 },
                 error: function () {
                 	$.alert("提交失败，请重试！");
-                    $("#btnSubmit").removeClass("wxss-register_btn_disabled_div").addClass("wxss-register_btn_div").attr("onclick","nextbtn();"); 
+                	$("#btnSubmit").removeClass("wxss-register_btn_disabled_div");
+                	$("#btnSubmit").addClass("wxss-register_btn_div");
                 }
             });
         } else {

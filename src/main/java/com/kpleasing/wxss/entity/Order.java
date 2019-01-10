@@ -41,6 +41,7 @@ public class Order implements java.io.Serializable {
 	private DrivingLicenseInfo drivingLicenseInfo;
 	private BankInfo bankInfo;
 	private PersonInfo personInfo;
+	private ContactInfo contactInfo;
 	private WorkInfo workInfo;
 
 	public Order() {
@@ -264,6 +265,15 @@ public class Order implements java.io.Serializable {
 		this.personInfo = personInfo;
 	}
 
+	@Transient
+	public ContactInfo getContactInfo() {
+		return contactInfo;
+	}
+
+	public void setContactInfo(ContactInfo contactInfo) {
+		this.contactInfo = contactInfo;
+	}
+	
 	@Transient
 	public WorkInfo getWorkInfo() {
 		return workInfo;

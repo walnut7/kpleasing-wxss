@@ -55,7 +55,7 @@ public class SecurityFilter implements Filter {
 					}
 				}
 			}
-		} catch(Exception e) {}
+		} catch(Exception e) {logger.error(e.getMessage(), e);}
 		return true;
 	}
 	
@@ -158,7 +158,7 @@ public class SecurityFilter implements Filter {
 	}
 
 	@Override
-	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) 
+	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
 			throws IOException, ServletException {
 		try {
 			HttpServletRequest httpRequest = (HttpServletRequest) request;
@@ -169,8 +169,8 @@ public class SecurityFilter implements Filter {
 	        String redirectPath = httpRequest.getContextPath() + config.getInitParameter("redirectPath") + paramters;
 	        String defaultPath = httpRequest.getContextPath() + config.getInitParameter("defaultPath") + paramters;
 	        
-	        if(!isIgnore(httpRequest.getRequestURI(), new String[]{"login2"})) {
-	        	logger.info("====忽略-自动登录跳转！=======");
+	        // 忽略身份验证
+	        if(!isIgnore(httpRequest.getRequestURI(), new String[]{"login2", "logout"})) {
 				chain.doFilter(request, response);
 				return;
 			}
@@ -200,13 +200,12 @@ public class SecurityFilter implements Filter {
 				chain.doFilter(request, response);
 				return;
 			}
-	        
-	        
+			
 			if(null == user || StringUtils.isBlank(user.getUserId()) || StringUtils.isBlank(user.getPhone())) {
 				if(!isLoginPage(httpRequest)) {
 					wrapperResponse.sendRedirect(redirectPath);
 					return;
-				} 
+				}
 			} else {
 				if(isLoginPage(httpRequest)) {
 					logger.info("login default path is：" + defaultPath);
@@ -220,6 +219,7 @@ public class SecurityFilter implements Filter {
 		chain.doFilter(request, response);
 	}
 	
+
 	@Override
 	public void init(FilterConfig filterConfig) throws ServletException {
 		config = filterConfig;

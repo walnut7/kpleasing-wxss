@@ -4,8 +4,7 @@
 <%@ page isELIgnored="false"%>
 <%
 	String path = request.getContextPath();
-	String basePath = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort()
-			+ path + "/";
+	String basePath = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + path + "/";
 %>
 <c:set var="ctx" value="${pageContext['request'].contextPath}" />
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
@@ -231,19 +230,19 @@
         if ($("input[name='username']").val() === "") {
             $.alert("姓名不能为空");
 
-        } else if ($("input[name='gender']").val() === "") {
+        } else if ($("input[name='gender']").val() == "") {
             $.alert("性别不能为空");
 
-        } else if ($("input[name='national']").val() === "") {
+        } else if ($("input[name='national']").val() == "") {
             $.alert("民族不能为空");
 
-        } else if ($("input[name='birthday']").val() === "") {
+        } else if ($("input[name='birthday']").val() == "") {
             $.alert("出生日期不能为空");
 
-        } else if ($("textarea[name='address']").val() === "") {
+        } else if ($("textarea[name='address']").val() == "") {
             $.alert("住址不能为空");
 
-        }else if ($("input[name='certFrontImagePath']").val() === "") {
+        }else if ($("input[name='certFrontImagePath']").val() == "") {
             $.alert("请上传身份证正面照片");
 
         } else { 
@@ -393,7 +392,11 @@
     }
 
     function convertDate(date) {
-		return date.substring(0,4)+"-"+date.substring(5,7)+"-"+date.substring(8,10);
+        try {
+			return date.substring(0,4)+"-"+date.substring(5,7)+"-"+date.substring(8,10);
+        } catch(err) {
+			return "1990年01月0日";
+        }
     }
 </script>
 </html>
